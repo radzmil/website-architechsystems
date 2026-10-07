@@ -3,7 +3,7 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='demo-dashboard.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='demo-dashboard-match.css') }}">
-<section class="demo-wrap" aria-label="Simulator dashboard klien">
+<section class="demo-wrap" aria-label="Demo dashboard simulator">
   <div class="demo-banner"><span>SIMULATOR DEMO · DATA REKAAN</span><span>Tiada sambungan WhatsApp atau akaun klien sebenar</span></div>
   <div class="demo-shell">
     <aside class="demo-side"><div class="demo-brand"><span class="demo-brand-icon">A</span><span>architechsystems<small>CLI-DEMO · Pelan demonstrasi</small></span></div><nav aria-label="Navigasi simulator"><span class="demo-nav-label">WORKSPACE</span><button class="demo-nav active" data-view="chat" type="button">Pusat Kawalan</button><button class="demo-nav" data-view="phonebook" type="button">Phone Book</button><span class="demo-nav-label">BOT &amp; AI</span><button class="demo-nav" data-view="settings" type="button">Profil Bot WhatsApp</button><button class="demo-nav" data-view="analytics" type="button">Penggunaan Token</button></nav><div class="demo-side-foot">CLIENT PORTAL<br><a href="{{ url_for('pricing') }}">← Kembali ke produk</a></div></aside>
@@ -17,4 +17,5 @@
   </div>
 </section>
 <script src="{{ url_for('static', filename='demo-dashboard.js') }}" defer></script>
+<script src="{{ url_for('static', filename='demo-dashboard-language.js') }}" defer></script>
 {% endblock %}
