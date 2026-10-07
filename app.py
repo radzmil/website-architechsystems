@@ -16,6 +16,10 @@ def solutions():
 def pricing():
     return render_template('pricing.html')
 
+@app.route('/demo-dashboard')
+def demo_dashboard():
+    return render_template('demo_dashboard.html')
+
 @app.route('/about')
 def about():
     return render_template('about.html')
