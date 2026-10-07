@@ -20,6 +20,10 @@ def pricing():
 def demo_dashboard():
     return render_template('demo_dashboard.html')
 
+@app.route('/demo-gerak-gempur')
+def demo_gerak_gempur():
+    return render_template('demo_gerak_gempur.html')
+
 @app.route('/about')
 def about():
     return render_template('about.html')
