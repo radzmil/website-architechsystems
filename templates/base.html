@@ -217,6 +217,7 @@
                     el.innerHTML = el.getAttribute(`data-${lang}`);
                 }
             });
+            window.dispatchEvent(new CustomEvent('architech:languagechange', { detail: { lang } }));
         }
 
         document.getElementById('lang-toggle').addEventListener('click', () => {
