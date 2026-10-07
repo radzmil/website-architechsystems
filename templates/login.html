@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+{% block content %}
+<section class="card login-card">
+  <div class="login-symbol" aria-hidden="true">⌘</div>
+  <span class="eyebrow">SECURE ACCESS / ADMIN</span>
+  <h1>Log masuk admin</h1>
+  <p class="login-intro">Akses pusat kawalan automasi LeeA. Masukkan kata laluan pentadbir untuk meneruskan.</p>
+  {% if error %}<p role="alert">{{ error }}</p>{% endif %}
+  <form method="post">
+    <label for="admin-password">Kata laluan</label>
+    <div class="password-row">
+      <input id="admin-password" name="password" type="password" required autocomplete="current-password">
+      <button id="toggle-password" type="button" aria-controls="admin-password" aria-pressed="false" class="toggle-password">Tunjuk</button>
+    </div>
+    <button type="submit" class="login-submit">Log masuk →</button>
+  </form>
+</section>
+<script>
+  const password = document.getElementById('admin-password');
+  const toggle = document.getElementById('toggle-password');
+  toggle.addEventListener('click', () => {
+    const visible = password.type === 'password';
+    password.type = visible ? 'text' : 'password';
+    toggle.textContent = visible ? 'Sembunyi' : 'Tunjuk';
+    toggle.setAttribute('aria-pressed', String(visible));
+  });
+</script>
+{% endblock %}

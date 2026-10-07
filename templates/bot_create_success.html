@@ -1,0 +1,7 @@
+{% extends 'layout.html' %}{% block content %}
+<h1>Hasil cipta bot {{ result.code }}</h1>
+<p>Folder: {{ result.folder }}. Semak konfigurasi dan kesihatan bot sebelum mengaktifkannya.</p>
+<section class="card"><h2>GitHub</h2><p>{{ 'Push berjaya' if result.github.success else 'Belum berjaya' }}</p><p>{{ result.github.message or result.github.branch }}</p></section>
+<section class="card"><h2>Railway</h2><p>{{ 'Service dicipta (deployment belum disahkan)' if result.railway.success else 'Belum berjaya' }}</p><p>{{ result.railway.message }}</p></section>
+<a href="{{ url_for('create_bot') }}">Kembali ke borang</a>
+{% endblock %}

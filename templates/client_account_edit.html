@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}{% block content %}
+<h1>Kemaskini data klien {{ account.username }}</h1>
+<p>Kod CLI, server, slot dan username tidak diubah. V1 = 200 MB; V2 = 400 MB (label sahaja, bukan had storan automatik).</p>
+{% if error %}<p role="alert" class="form-alert">{{ error }}</p>{% endif %}
+<form method="post" class="card registration-card">
+  <input type="hidden" name="csrf" value="{{ session.csrf }}">
+  <label>Jenis bot <select name="bot_version" required><option value="">Pilih versi</option>{% for version in ['V1', 'V2'] %}<option value="{{ version }}" {% if request.form.get('bot_version', account.bot_version or '') == version %}selected{% endif %}>{{ version }} ({{ '200' if version == 'V1' else '400' }} MB)</option>{% endfor %}</select></label>
+  <label>Model AI bot <input name="ai_model" maxlength="100" value="{{ request.form.get('ai_model', account.ai_model or '') }}" required></label>
+  <label>Pelan langganan <input name="plan" maxlength="100" value="{{ request.form.get('plan', account.plan or '') }}" required></label>
+  <label>Tarikh mula langganan <input type="date" name="subscription_start" value="{{ request.form.get('subscription_start', account.subscription_start or '') }}" required></label>
+  <label>Tarikh tamat langganan <input type="date" name="subscription_end" value="{{ request.form.get('subscription_end', account.subscription_end or '') }}" required></label>
+  {% for key, label in [('ai_token_balance', 'Baki token chat AI'), ('ai_token_quota', 'Kuota token chat AI'), ('meta_token_balance', 'Baki token chat Meta'), ('meta_token_quota', 'Kuota token chat Meta')] %}
+  <label>{{ label }} <input type="number" min="0" name="{{ key }}" value="{{ request.form.get(key, account[key] if account[key] is not none else '') }}" required></label>
+  {% endfor %}
+  <label>API bot client (URL bot HTTPS) <input type="url" name="bot_url" value="{{ request.form.get('bot_url', account.bot_url or '') }}"></label>
+  <label>URL portal Vercel <input type="url" name="vercel_url" value="{{ request.form.get('vercel_url', account.vercel_url or '') }}"></label>
+  <button type="submit">Simpan perubahan</button>
+</form>
+<a href="{{ url_for('clients') }}">Kembali ke senarai klien</a>
+{% endblock %}

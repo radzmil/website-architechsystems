@@ -1,0 +1,1 @@
+{% extends 'layout.html' %}{% block content %}<h1>Sistem 4: Connection</h1>{% for c in connections %}<p>{{ c.cli_code }} — {{ c.username }}: bot dan dashboard ada URL; sambungan belum disahkan.</p>{% else %}<p>Tiada pasangan bot-dashboard yang layak.</p>{% endfor %}<a href="{{ url_for('system4_connect') }}">Semak connection</a>{% endblock %}

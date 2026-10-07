@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}{% block content %}
+<div class="page-heading"><div><span class="eyebrow">PENGURUSAN KLIEN · 01 / 02</span><h1>Daftar klien</h1><p>Daftarkan akaun dalam Master DB dengan padanan server dan slot yang tepat.</p></div><span class="heading-badge">● Pendaftaran terkawal</span></div>
+<p>Klien sudah wujud dalam PostgreSQL? <a href="{{ url_for('link_existing_client') }}">Daftar klien sedia ada tanpa mencipta rekod baharu</a>.</p>
+<div class="workflow-note"><strong>Aliran kerja</strong><span>01 · Daftar klien</span><span>→</span><span>02 · Konfigurasi bot</span><p>Pendaftaran ini tidak menjana bot atau membuat deployment.</p></div>
+{% if error %}<p role="alert" class="form-alert">{{ error }}</p>{% endif %}
+<form method="post" class="card registration-card"><input type="hidden" name="csrf" value="{{ session.csrf }}">
+  <section class="form-section"><div class="section-heading"><span class="section-number">01</span><div><h2>Identiti klien</h2><p>Maklumat asas untuk rekod dan akses portal.</p></div></div>
+    <div class="form-grid"><label>Kod CLI <input id="cli-code" name="cli_code" value="{{ next_code or '' }}" placeholder="CLI-1000" pattern="CLI-1[01][0-9]{2}" maxlength="8" required autocomplete="off"><small>CLI-1000 hingga CLI-1199 · 4 slot bagi setiap server.</small></label><label>Username DB <input name="username" pattern="[a-z0-9_]{3,100}" placeholder="contoh_klien" required autocomplete="off"><small>Huruf kecil, nombor dan garis bawah sahaja.</small></label><label>Nama paparan <input name="display_name" placeholder="Nama syarikat atau klien" required></label><label>Kata laluan klien <input name="password" type="password" minlength="12" required autocomplete="new-password"><small>Minimum 12 aksara.</small></label></div>
+  </section>
+  <section class="form-section"><div class="section-heading"><span class="section-number">02</span><div><h2>Penempatan automatik</h2><p>Server02–server51 dan slot 1–4 dipadankan terus daripada kod CLI.</p></div></div>
+    <div class="assignment-preview" role="status" aria-live="polite"><div><span>SERVER DIPADANKAN</span><strong id="server-preview">—</strong></div><div><span>SLOT DITETAPKAN</span><strong id="slot-preview">—</strong></div><div><span>STATUS</span><strong id="assignment-status">Masukkan kod CLI</strong></div></div>
+    <div class="form-grid"><label>Server <select id="server-id" name="server_id" required><option value="">Pilih kod CLI dahulu</option>{% for s in servers %}<option value="{{ s.id }}">{{ s.id }}</option>{% endfor %}</select><small>Hanya server aktif dengan kapasiti tersedia.</small></label><label>Slot mengikut kod CLI (1–4) <input id="bot-slot" type="number" min="1" max="4" name="bot_slot" required readonly><small>Ditentukan secara automatik; tidak perlu dipilih.</small></label></div>
+  </section>
+  <section class="form-section"><div class="section-heading"><span class="section-number">03</span><div><h2>Pautan sedia ada <span class="optional-tag">Pilihan</span></h2><p>Isi hanya jika bot atau portal telah pun diterbitkan.</p></div></div><div class="form-grid"><label>URL bot sedia ada <input type="url" name="bot_url" placeholder="https://contoh.up.railway.app"></label><label>URL portal sedia ada <input type="url" name="vercel_url" placeholder="https://contoh.vercel.app"></label></div></section>
+  <div class="form-actions"><p>Semak maklumat sebelum menyimpan ke Master DB.</p><button type="submit">Daftar klien <span aria-hidden="true">→</span></button></div>
+</form>
+<script>
+(() => {
+  const code = document.getElementById('cli-code');
+  const server = document.getElementById('server-id');
+  const slot = document.getElementById('bot-slot');
+  const serverPreview = document.getElementById('server-preview');
+  const slotPreview = document.getElementById('slot-preview');
+  const status = document.getElementById('assignment-status');
+  function updateAssignment() {
+    const value = code.value.trim().toUpperCase();
+    const number = Number(value.slice(4));
+    const valid = /^CLI-1[01][0-9]{2}$/.test(value) && number >= 1000 && number <= 1199;
+    const expected = valid ? `server${String(2 + Math.floor((number - 1000) / 4)).padStart(2, '0')}` : '';
+    const available = expected && Array.from(server.options).some(option => option.value === expected);
+    server.value = available ? expected : '';
+    slot.value = valid ? String(1 + (number - 1000) % 4) : '';
+    serverPreview.textContent = expected || '—';
+    slotPreview.textContent = slot.value || '—';
+    status.textContent = !valid ? 'Kod CLI belum sah' : available ? 'Sedia didaftarkan' : 'Server tidak tersedia';
+    status.classList.toggle('assignment-ready', Boolean(available));
+  }
+  code.addEventListener('input', updateAssignment);
+  updateAssignment();
+})();
+</script>
+{% endblock %}
