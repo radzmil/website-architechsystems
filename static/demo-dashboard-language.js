@@ -29,6 +29,7 @@
     ['Tetapan ini hanya dipaparkan dalam pelayar anda dan tidak disimpan pada pelayan.', 'These settings are only shown in your browser and are not saved on the server.']
   ];
   const root = document.querySelector('.demo-wrap');
+  if (!root) return;
   const lookup = new Map(translations.map(([original, ms, en]) => [original, [en || ms, en ? ms : original]]));
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
@@ -40,6 +41,7 @@
     // Preserve icons and status dots when the translatable text has siblings.
     if (element.children.length) {
       const span = document.createElement('span');
+      span.textContent = value;
       node.replaceWith(span);
       element = span;
     }
@@ -68,6 +70,6 @@
     }
     initialGreeting = greeting.value;
   }
-  document.getElementById('lang-toggle').addEventListener('click', () => requestAnimationFrame(sync));
+  window.addEventListener('architech:languagechange', sync);
   sync();
 })();

@@ -74,6 +74,6 @@
     setNotice('sent');
   });
   document.getElementById('demo-save').addEventListener('click', () => setNotice('saved'));
-  document.getElementById('lang-toggle').addEventListener('click', () => { requestAnimationFrame(() => { renderLeads(); updateNotice(); }); });
+  window.addEventListener('architech:languagechange', () => { renderLeads(); updateNotice(); });
   renderLeads();
 })();
