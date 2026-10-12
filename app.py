@@ -5,6 +5,7 @@ import ssl
 from email.message import EmailMessage
 from email.utils import parseaddr
 from xml.etree.ElementTree import Element, SubElement, tostring
+from urllib.parse import urlsplit
 
 from flask import Flask, render_template, request, flash, redirect, url_for, Response
 
@@ -98,8 +99,10 @@ def solutions():
 @app.route('/pricing')
 def pricing():
     demo_url = os.environ.get('VOICE_DEMO_URL', '').strip().rstrip('/')
-    if not demo_url.startswith('https://'):
-        demo_url = ''
+    parsed = urlsplit(demo_url)
+    if (parsed.scheme != 'https' or not parsed.hostname or parsed.username or parsed.password
+            or parsed.path or parsed.query or parsed.fragment):
+        demo_url = None
     return render_template('pricing.html', voice_demo_url=demo_url)
 
 @app.route('/demo-dashboard')

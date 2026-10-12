@@ -1,7 +1,7 @@
 <div class="max-w-7xl mx-auto text-center mb-10" id="ai-call-centre">
     <span class="text-xs font-mono text-amber-400 uppercase tracking-widest block mb-2" data-ms="// MODUL SUARA AI" data-en="// AI VOICE MODULE">// MODUL SUARA AI</span>
     <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4" data-ms="Pakej AI Call Centre" data-en="AI Call Centre Packages">Pakej AI Call Centre</h2>
-    <p class="text-zinc-400 text-sm max-w-2xl mx-auto" data-ms="Bandingkan pakej langganan suara AI. Demo di bawah ialah simulasi dalam pelayar, bukan panggilan telefon sebenar." data-en="Compare AI voice subscriptions. The demo below is a browser simulation, not a real phone call.">Bandingkan pakej langganan suara AI. Demo di bawah ialah simulasi dalam pelayar, bukan panggilan telefon sebenar.</p>
+    <p class="text-zinc-400 text-sm max-w-2xl mx-auto" data-ms="Bandingkan pakej langganan suara AI dan cuba simulasi Leea Bot terus dalam pelayar." data-en="Compare AI voice subscriptions and try the Leea Bot simulation in your browser.">Bandingkan pakej langganan suara AI dan cuba simulasi Leea Bot terus dalam pelayar.</p>
 </div>
 {% set plans = [
     {'name':'Starter', 'price':'200', 'setup':'150', 'minutes':'100', 'daily':'~3–5', 'number_ms':'1 nombor Malaysia', 'number_en':'1 Malaysian number', 'forward_ms':'Ya (sokongan UMobile / telco)', 'forward_en':'Yes (UMobile / telco support)', 'voice_ms':'Ultra-realistik (Cartesia / ElevenLabs)', 'voice_en':'Ultra-realistic (Cartesia / ElevenLabs)', 'stt':'Deepgram Low Latency', 'brain_ms':'Custom prompt asas (FAQ & tempahan)', 'brain_en':'Basic custom prompt (FAQ & booking)', 'payment_ms':'Tiada', 'payment_en':'Not included', 'logs_ms':'Ya (audio & teks)', 'logs_en':'Yes (audio & text)', 'summary_ms':'Tiada', 'summary_en':'Not included', 'support_ms':'Standard', 'support_en':'Standard'},
@@ -32,12 +32,11 @@
     {% endfor %}
 </div>
 <div class="max-w-4xl mx-auto glass-panel p-6 rounded-3xl border border-amber-500/30 mb-20" id="demo-suara">
-    <h3 class="text-xl font-bold text-white mb-2" data-ms="Cuba demo suara Leea Bot" data-en="Try the Leea Bot voice demo">Cuba demo suara Leea Bot</h3>
-    <p class="text-zinc-400 text-xs mb-5" data-ms="Demo pelayar sahaja: benarkan akses mikrofon untuk bercakap. Tidak membuat atau menerima panggilan telefon, dan tidak mewakili semua ciri pakej." data-en="Browser-only demo: allow microphone access to speak. It does not make or receive phone calls and does not represent every plan feature.">Demo pelayar sahaja: benarkan akses mikrofon untuk bercakap. Tidak membuat atau menerima panggilan telefon, dan tidak mewakili semua ciri pakej.</p>
+    <h3 class="text-xl font-bold text-white mb-2">Demo suara Leea Bot</h3>
+    <p class="text-zinc-400 text-xs mb-5">Demo dalam pelayar, bukan panggilan GSM. Dengan memulakan demo suara, rakaman mikrofon dihantar ke Deepgram untuk transkripsi dan teks balasan dihantar ke Cartesia untuk suara. Jangan sebut maklumat sulit.</p>
     {% if voice_demo_url %}
-    <iframe src="{{ voice_demo_url }}" title="Demo suara Leea Bot" allow="microphone; autoplay" loading="lazy" referrerpolicy="no-referrer" class="w-full min-h-[680px] rounded-xl border border-zinc-700 bg-zinc-950"></iframe>
-    <p class="text-zinc-400 text-xs mt-3"><a href="{{ voice_demo_url }}" target="_blank" rel="noopener noreferrer" class="text-amber-300 underline" data-ms="Buka demo dalam tab baharu ↗" data-en="Open demo in a new tab ↗">Buka demo dalam tab baharu ↗</a></p>
+    <iframe src="{{ voice_demo_url }}/" title="Demo suara Leea Bot" allow="microphone; autoplay" referrerpolicy="no-referrer" loading="lazy" class="w-full border-0 rounded-xl bg-zinc-900" style="height:720px"></iframe>
     {% else %}
-    <p class="text-amber-300 text-sm" role="status" data-ms="Demo suara belum tersedia. Sila hubungi kami untuk demonstrasi." data-en="Voice demo is not available yet. Contact us for a demonstration.">Demo suara belum tersedia. Sila hubungi kami untuk demonstrasi.</p>
+    <p class="text-amber-300 text-sm" role="status">Demo suara belum tersedia. Sila cuba lagi selepas sambungan servis demo dikonfigurasi.</p>
     {% endif %}
 </div>
