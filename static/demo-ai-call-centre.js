@@ -3,7 +3,12 @@
   const answer = document.getElementById('call-answer');
   const start = document.getElementById('call-start');
   const mic = document.getElementById('call-mic');
+  const micLabel = document.getElementById('call-mic-label');
   const end = document.getElementById('call-end');
+  const clock = document.getElementById('call-clock');
+  const updateClock = () => { clock.textContent = new Intl.DateTimeFormat('en-MY', { hour: 'numeric', minute: '2-digit', hour12: false }).format(new Date()); };
+  updateClock();
+  const clockTimer = setInterval(updateClock, 15000);
   let active = false;
   let muted = false;
   let token = 0;
@@ -16,6 +21,7 @@
   let timer = null;
   let abort = null;
   let format = null;
+  let history = [];
 
   function stopTone() {
     clearInterval(toneTimer);
@@ -75,7 +81,7 @@
           const data = await response.json();
           if (!response.ok) throw new Error(data.error || 'Transkripsi gagal.');
           if (!active || muted || id !== token) return;
-          if (data.transcript?.trim()) reply(data.transcript.trim(), id);
+          if (data.transcript?.trim()) await reply(data.transcript.trim(), id);
           else listen(id);
         } catch (error) {
           if (active && !muted && id === token) {
@@ -128,18 +134,28 @@
     }
   }
 
-  function reply(question, id) {
-    const text = question.toLocaleLowerCase('ms-MY');
-    let message = 'Soalan yang menarik! Saya Leea, suara demo Architech Systems. Dalam pengalaman ini, anda boleh bercakap seperti sedang menghubungi pusat khidmat pelanggan: saya mendengar soalan anda dan membalas dengan suara. Demo ini menggunakan jawapan contoh, jadi untuk maklumat khusus tentang perniagaan anda, pasukan kami boleh bincangkan aliran perbualan yang sesuai. Nak tahu tentang pakej atau cara ia berfungsi?';
-    if (/hai|helo|hello|assalam/.test(text)) {
-      message = 'Hai, seronok dapat bercakap dengan anda! Saya Leea, pembantu suara demo Architech Systems. Cuba tanya saya tentang cara pusat panggilan suara AI berfungsi, pakej yang tersedia, atau bagaimana pengalaman ini boleh disesuaikan untuk pelanggan perniagaan anda.';
-    } else if (/harga|pakej|bayar|kos/.test(text)) {
-      message = 'Bagus, perancangan bajet memang penting. Di halaman pricing, anda boleh bandingkan pakej Starter, Pro dan Advance mengikut keperluan serta kuota minit. Setiap perniagaan mungkin memerlukan aliran panggilan yang berbeza, jadi pasukan Architech Systems boleh bantu semak pilihan yang sesuai dan sahkan sebut harga terkini. Demo ini tidak mengambil bayaran atau membuat tempahan sebenar.';
-    } else if (/ai call|panggilan|telefon|fungsi|demo/.test(text)) {
-      message = 'Bayangkan pelanggan menghubungi perniagaan anda dan disambut oleh suara yang mesra. Di sini anda boleh rasa aliran asasnya: anda bercakap, suara ditukar kepada teks, kemudian saya memberi jawapan bersuara. Dalam sistem produksi, skrip, maklumat perniagaan dan integrasi boleh dirancang bersama pasukan kami mengikut pakej. Versi yang anda cuba sekarang ialah simulasi dalam browser, bukan talian telefon sebenar, dan jawapannya masih contoh.';
+  async function reply(question, id) {
+    status.textContent = 'Leea Bot sedang berfikir...';
+    try {
+      abort = new AbortController();
+      const response = await fetch('/demo-ai-call-centre/chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: question, history: history.slice(-8) }), signal: abort.signal
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'API chat tidak tersedia.');
+      if (!active || muted || id !== token) return;
+      history.push({ role: 'user', content: question }, { role: 'assistant', content: data.reply });
+      history = history.slice(-8);
+      answer.textContent = `Saya dengar: “${question}”\n\nLeea: ${data.reply}`;
+      await speak(data.reply, id);
+    } catch (error) {
+      if (active && !muted && id === token) {
+        answer.textContent = error.message || 'Leea Bot tidak dapat menjawab sekarang.';
+        status.textContent = answer.textContent;
+        timer = setTimeout(() => listen(id), 1500);
+      }
     }
-    answer.textContent = message;
-    speak(message, id);
   }
 
   function hangup() {
@@ -154,7 +170,10 @@
     stopPlayback();
     start.hidden = false;
     end.hidden = true;
-    mic.hidden = true;
+    mic.disabled = true;
+    mic.setAttribute('aria-pressed', 'false');
+    mic.setAttribute('aria-label', 'Mute');
+    micLabel.textContent = 'Mute';
     status.textContent = 'Panggilan tamat · Tekan Panggil untuk cuba lagi.';
   }
 
@@ -162,10 +181,11 @@
     if (active) return;
     active = true;
     muted = false;
+    history = [];
     const id = ++token;
     start.hidden = true;
     end.hidden = false;
-    mic.hidden = true;
+    mic.disabled = true;
     status.textContent = 'Memanggil Leea Bot...';
     ring();
     // Request mic during the user gesture, but wait for the greeting before recording.
@@ -178,10 +198,11 @@
       await new Promise(resolve => { timer = setTimeout(resolve, 3000); });
       if (!active || id !== token) return;
       stopTone();
-      mic.hidden = false;
-      mic.textContent = '🎙 Mute';
+      mic.disabled = false;
+      micLabel.textContent = 'Mute';
+      mic.setAttribute('aria-label', 'Mute');
       mic.setAttribute('aria-pressed', 'false');
-      answer.textContent = 'Helo, selamat datang! Saya Leea, pembantu suara demo daripada Architech Systems. Seronok dapat bercakap dengan anda hari ini. Cuba bayangkan pelanggan anda disambut dengan suara mesra seperti ini, tanpa perlu menunggu untuk bertanya soalan asas. Dalam demo ini, anda boleh bercakap terus dengan saya untuk merasai aliran perbualan suara. Jawapan saya masih jawapan contoh; sistem untuk perniagaan sebenar boleh dirancang dengan skrip dan maklumat khusus bersama pasukan kami. Jadi, apa yang anda ingin tahu tentang AI Call Centre?';
+      answer.textContent = 'Helo, saya Leea! Apa khabar?';
       await speak(answer.textContent, id);
     } catch (error) {
       if (active && id === token) {
@@ -198,7 +219,8 @@
     if (!active) return;
     muted = !muted;
     mic.setAttribute('aria-pressed', String(muted));
-    mic.textContent = muted ? '🎙 Unmute' : '🎙 Mute';
+    micLabel.textContent = muted ? 'Unmute' : 'Mute';
+    mic.setAttribute('aria-label', muted ? 'Unmute' : 'Mute');
     if (muted) {
       clearTimeout(timer);
       if (recorder?.state === 'recording') recorder.stop();
@@ -206,5 +228,5 @@
     } else if (recorder?.state !== 'recording' && !sound && !voice) listen(token);
   });
   end.addEventListener('click', hangup);
-  window.addEventListener('pagehide', hangup);
+  window.addEventListener('pagehide', () => { clearInterval(clockTimer); hangup(); });
 })();

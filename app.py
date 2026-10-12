@@ -10,8 +10,22 @@ from urllib.parse import urlsplit
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
+from pathlib import Path
 
 from flask import Flask, render_template, request, flash, redirect, url_for, Response, jsonify
+
+# Local development only: hosting environment variables take precedence.
+_local_env = Path(__file__).with_name('.env')
+if _local_env.is_file():
+    for _line in _local_env.read_text(encoding='utf-8-sig').splitlines():
+        _line = _line.strip()
+        if not _line or _line.startswith('#') or '=' not in _line:
+            continue
+        _name, _value = _line.split('=', 1)
+        _name = _name.strip()
+        if _name in ('ASAI_API_KEY', 'ASAI_MODEL', 'API_BASE_URL',
+                     'DEEPGRAM_API_KEY', 'CARTESIA_API_KEY', 'CARTESIA_VOICE_ID'):
+            os.environ.setdefault(_name, _value.strip().strip('"\''))
 
 app = Flask(__name__)
 # Require a persistent secret in production; never use a publicly known fallback.
@@ -116,6 +130,52 @@ def demo_dashboard():
 @app.route('/demo-ai-call-centre')
 def demo_ai_call_centre():
     return render_template('demo_ai_call_centre.html')
+
+
+@app.post('/demo-ai-call-centre/chat')
+def demo_voice_chat():
+    if request.content_length is None or request.content_length > 4096:
+        return jsonify(error='Permintaan terlalu besar.'), 413
+    payload = request.get_json(silent=True)
+    message = payload.get('message') if isinstance(payload, dict) else None
+    history = payload.get('history', []) if isinstance(payload, dict) else None
+    if not isinstance(message, str) or not message.strip() or len(message) > 300:
+        return jsonify(error='Mesej tidak sah.'), 400
+    if (not isinstance(history, list) or len(history) > 8 or
+            any(not isinstance(item, dict) or item.get('role') not in ('user', 'assistant') or
+                not isinstance(item.get('content'), str) or not item['content'].strip() or
+                len(item['content']) > 700 for item in history)):
+        return jsonify(error='Sejarah perbualan tidak sah.'), 400
+    key = os.environ.get('ASAI_API_KEY', '').strip()
+    model = os.environ.get('ASAI_MODEL', '').strip()
+    base = os.environ.get('API_BASE_URL', '').strip().rstrip('/')
+    parsed = urlsplit(base)
+    if (not key or not model or parsed.scheme != 'https' or not parsed.hostname or
+            parsed.username or parsed.password or parsed.query or parsed.fragment or
+            parsed.path not in ('', '/v1')):
+        return jsonify(error='API chat belum dikonfigurasi dengan betul.'), 503
+    messages = [{'role': 'system', 'content': (
+        'Anda Leea Bot, pembantu demo suara Architech Systems. Berbual secara mesra dalam Bahasa Melayu, '
+        'jawab ringkas (1-2 ayat) supaya sesuai untuk suara. Jika ditanya harga atau fakta yang tidak '
+        'disahkan, jangan reka jawapan; sarankan hubungi pasukan Architech Systems. '
+        'Jangan minta data peribadi atau rahsia. Ini simulasi, bukan panggilan telefon sebenar.'
+    )}, *[{'role': item['role'], 'content': item['content']} for item in history],
+                {'role': 'user', 'content': message.strip()}]
+    upstream = Request(base + '/chat/completions', data=json.dumps({
+        'model': model, 'messages': messages, 'max_tokens': 200,
+    }).encode('utf-8'), headers={
+        'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json'
+    }, method='POST')
+    try:
+        with urlopen(upstream, timeout=20) as result:
+            data = json.load(result)
+        reply = data['choices'][0]['message']['content']
+        if not isinstance(reply, str) or not reply.strip():
+            raise ValueError('Empty chat response')
+    except (HTTPError, URLError, TimeoutError, OSError, ValueError, KeyError, IndexError, TypeError):
+        app.logger.warning('Demo chat provider unavailable')
+        return jsonify(error='Leea Bot tidak dapat menjawab sekarang. Sila cuba lagi.'), 502
+    return jsonify(reply=reply.strip()[:700])
 
 
 @app.post('/demo-ai-call-centre/transcribe')

@@ -1,22 +1,34 @@
 {% extends "base.html" %}
 {% block title %}Simulator AI Call Centre | Architech Systems{% endblock %}
 {% block content %}
-<section class="max-w-xl mx-auto px-5 py-8 text-white" aria-label="Simulasi panggilan Leea Bot">
-  <a href="{{ url_for('pricing') }}#demo-suara" class="text-amber-400">← Kembali ke pricing</a>
-  <div class="mt-5 mx-auto max-w-md min-h-[650px] rounded-3xl bg-[#1d1e23] p-8 text-center flex flex-col shadow-2xl">
-    <p class="text-amber-400 text-xs uppercase tracking-widest">Simulasi browser · bukan panggilan telefon sebenar</p>
-    <p id="call-status" role="status" aria-live="polite" class="mt-10 text-zinc-300">Sedia untuk memanggil</p>
-    <h1 class="text-5xl font-light mt-3">Leea Bot</h1>
-    <p class="text-zinc-400 mt-2">Pembantu demo Architech Systems</p>
-    <div class="mx-auto mt-14 w-40 h-40 rounded-full bg-amber-600 flex items-center justify-center text-7xl font-semibold" aria-hidden="true">L</div>
-    <div class="mt-auto pt-10">
-    <p id="call-answer" aria-live="polite" class="mb-5 text-sm text-zinc-400">Jawapan demo ialah jawapan contoh. Jangan sebut maklumat sulit.</p>
-    <div class="mt-6 flex flex-wrap justify-center gap-3">
-      <button id="call-start" type="button" class="rounded-full bg-green-600 px-8 py-4 font-bold">☎ Panggil Leea Bot</button>
-      <button id="call-mic" type="button" hidden aria-pressed="false" class="rounded-full bg-zinc-700 px-6 py-4 font-bold">🎙 Mute</button>
-      <button id="call-end" type="button" hidden class="rounded-full bg-red-600 px-8 py-4 font-bold">☎ Tamat</button>
+<link rel="stylesheet" href="{{ url_for('static', filename='demo-ai-call-centre.css') }}">
+<section class="call-page" aria-label="Simulasi panggilan Leea Bot">
+  <a href="{{ url_for('pricing') }}#demo-suara" class="call-back">← Kembali ke pricing</a>
+  <div class="call-phone">
+    <div class="call-topbar" aria-label="Status telefon demo">
+      <div><time id="call-clock" aria-label="Waktu semasa"></time><i class="fa-solid fa-phone-volume" aria-hidden="true"></i><span aria-hidden="true">···</span></div>
+      <div aria-hidden="true"><i class="fa-solid fa-signal"></i><span class="call-wifi">Vo<br>WiFi</span><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-three-quarters"></i></div>
     </div>
-    <p class="mt-5 text-xs text-zinc-500">Benarkan mikrofon untuk berbual. Rakaman dihantar ke Deepgram; suara jawapan menggunakan Cartesia jika tersedia.</p>
+    <div class="call-identity">
+      <p id="call-status" role="status" aria-live="polite">Sedia untuk memanggil</p>
+      <h1>Leea Bot</h1>
+      <p class="call-number">Mobile Demo</p>
+      <div class="call-avatar" aria-hidden="true">L</div>
+    </div>
+    <div class="call-bottom">
+      <p id="call-answer" aria-live="polite" class="call-answer">Jawapan demo ialah jawapan contoh. Jangan sebut maklumat sulit.</p>
+      <div class="call-controls">
+        <div class="call-options">
+          <div class="call-option"><span class="call-circle" aria-label="Keypad tidak tersedia dalam demo"><i class="fa-solid fa-grip" aria-hidden="true"></i></span><span>Keypad</span></div>
+          <div class="call-option"><button id="call-mic" type="button" disabled aria-pressed="false" aria-label="Mute" class="call-circle"><i class="fa-solid fa-microphone" aria-hidden="true"></i></button><span id="call-mic-label">Mute</span></div>
+          <div class="call-option"><span class="call-circle" aria-label="Speaker menggunakan tetapan peranti"><i class="fa-solid fa-volume-high" aria-hidden="true"></i></span><span>Speaker</span></div>
+          <div class="call-option"><span class="call-circle" aria-label="Pilihan lanjut tidak tersedia dalam demo"><i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i></span><span>More</span></div>
+        </div>
+        <button id="call-start" type="button" class="call-action call-dial" aria-label="Panggil Leea Bot"><i class="fa-solid fa-phone" aria-hidden="true"></i><span>Panggil Leea Bot</span></button>
+        <button id="call-end" type="button" hidden class="call-action call-hangup" aria-label="Tamatkan panggilan"><i class="fa-solid fa-phone-slash" aria-hidden="true"></i><span>Tamat</span></button>
+        <p class="call-disclaimer">Simulasi browser, bukan panggilan sebenar. Benarkan mikrofon untuk berbual; rakaman dihantar ke Deepgram dan suara dijana oleh Cartesia jika tersedia.</p>
+      </div>
+      <div class="call-home-bar" aria-hidden="true"></div>
     </div>
   </div>
 </section>
