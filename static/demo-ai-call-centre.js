@@ -6,11 +6,15 @@
   const start = document.getElementById('call-start');
   const mic = document.getElementById('call-mic');
   const end = document.getElementById('call-end');
-  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   let active = false;
-  let recognition = null;
+  let recorder = null;
+  let stream = null;
+  let sound = null;
+  let recordingTimer = null;
+  let generation = 0;
 
-  function speak(text) {
+  function browserVoice(text) {
+    if (!active) return;
     if (!('speechSynthesis' in window)) {
       status.textContent = 'Suara tidak disokong; jawapan masih boleh dibaca.';
       return;
@@ -25,6 +29,25 @@
     speechSynthesis.speak(utterance);
   }
 
+  async function speak(text) {
+    const token = generation;
+    try {
+      const result = await fetch('/demo-ai-call-centre/tts', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+      if (!result.ok) throw new Error('Cartesia tidak tersedia');
+      const blob = await result.blob();
+      if (!active || token !== generation) return;
+      sound = new Audio(URL.createObjectURL(blob));
+      sound.onended = () => { URL.revokeObjectURL(sound.src); sound = null; };
+      sound.onerror = () => { if (active && token === generation) browserVoice(text); };
+      await sound.play();
+    } catch {
+      if (active && token === generation) browserVoice(text);
+    }
+  }
+
   function reply(question) {
     const text = question.toLocaleLowerCase('ms-MY');
     let message = 'Ini simulator dengan jawapan contoh sahaja. Untuk maklumat produk atau sebut harga yang disahkan, sila hubungi pasukan Architech Systems melalui halaman Hubungi Kami.';
@@ -36,6 +59,8 @@
       message = 'Ini simulasi perbualan dalam browser, bukan panggilan telefon sebenar. Anda boleh bercakap jika browser menyokong pengecaman suara, atau taip soalan.';
     }
     answer.textContent = message;
+    generation++;
+    if (sound) { sound.pause(); URL.revokeObjectURL(sound.src); sound = null; }
     status.textContent = 'Jawapan contoh · Tanya lagi atau tamatkan demo.';
     speak(message);
   }
@@ -44,15 +69,20 @@
     active = true;
     start.hidden = true;
     end.hidden = false;
-    mic.hidden = !Recognition;
+    mic.hidden = !navigator.mediaDevices?.getUserMedia || !window.MediaRecorder;
     form.hidden = false;
-    status.textContent = Recognition ? 'Taip soalan atau tekan Cakap.' : 'Pengecaman suara tidak tersedia; sila taip soalan.';
+    status.textContent = mic.hidden ? 'Rakaman suara tidak tersedia; sila taip soalan.' : 'Taip soalan atau tekan Cakap.';
     input.focus();
     speak(answer.textContent);
   });
   end.addEventListener('click', () => {
     active = false;
-    recognition?.abort();
+    generation++;
+    clearTimeout(recordingTimer);
+    if (recorder?.state === 'recording') recorder.stop();
+    stream?.getTracks().forEach(track => track.stop());
+    stream = null;
+    if (sound) { sound.pause(); URL.revokeObjectURL(sound.src); sound = null; }
     if ('speechSynthesis' in window) speechSynthesis.cancel();
     start.hidden = false;
     end.hidden = true;
@@ -66,24 +96,50 @@
     reply(input.value.trim());
     input.value = '';
   });
-  mic.addEventListener('click', () => {
-    if (!active || !Recognition) return;
-    recognition = new Recognition();
-    recognition.lang = 'ms-MY';
-    recognition.onresult = event => {
-      if (active) reply(event.results[0][0].transcript);
-    };
-    recognition.onerror = () => { if (active) status.textContent = 'Mikrofon atau pengecaman suara gagal. Sila taip soalan.'; };
-    recognition.onend = () => { if (active && status.textContent === 'Sedang mendengar...') status.textContent = 'Tiada suara dikesan. Sila cuba lagi atau taip soalan.'; };
+  mic.addEventListener('click', async () => {
+    if (!active || mic.disabled) return;
+    const format = ['audio/webm', 'audio/mp4', 'audio/ogg'].find(type => MediaRecorder.isTypeSupported(type));
+    if (!format) { status.textContent = 'Format rakaman tidak disokong; sila taip soalan.'; return; }
+    mic.disabled = true;
     try {
-      recognition.start();
-      status.textContent = 'Sedang mendengar...';
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      if (!active) { stream.getTracks().forEach(track => track.stop()); return; }
+      const chunks = [];
+      const token = generation;
+      recorder = new MediaRecorder(stream, { mimeType: format });
+      recorder.ondataavailable = event => { if (event.data.size) chunks.push(event.data); };
+      recorder.onstop = async () => {
+        stream?.getTracks().forEach(track => track.stop());
+        stream = null;
+        if (!active || token !== generation) return;
+        status.textContent = 'Sedang transkripsi...';
+        try {
+          const result = await fetch('/demo-ai-call-centre/transcribe', {
+            method: 'POST', headers: { 'Content-Type': format },
+            body: new Blob(chunks, { type: format })
+          });
+          const data = await result.json();
+          if (!result.ok) throw new Error(data.error || 'Transkripsi gagal.');
+          if (!active || token !== generation) return;
+          if (!data.transcript?.trim()) throw new Error('Tiada suara dikesan. Sila taip soalan.');
+          reply(data.transcript);
+        } catch (error) {
+          if (active && token === generation) status.textContent = error.message || 'Transkripsi gagal. Sila taip soalan.';
+        } finally { mic.disabled = false; }
+      };
+      recorder.start();
+      status.textContent = 'Sedang merakam (maksimum 6 saat)...';
+      recordingTimer = setTimeout(() => { if (recorder?.state === 'recording') recorder.stop(); }, 6000);
     } catch {
-      status.textContent = 'Mikrofon tidak dapat dimulakan. Sila taip soalan.';
+      stream?.getTracks().forEach(track => track.stop());
+      stream = null;
+      mic.disabled = false;
+      if (active) status.textContent = 'Mikrofon tidak dapat dimulakan. Sila taip soalan.';
     }
   });
   window.addEventListener('pagehide', () => {
-    recognition?.abort();
+    if (recorder?.state === 'recording') recorder.stop();
+    stream?.getTracks().forEach(track => track.stop());
     if ('speechSynthesis' in window) speechSynthesis.cancel();
   });
 })();

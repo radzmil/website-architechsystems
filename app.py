@@ -1,4 +1,5 @@
 import logging
+import json
 import os
 import smtplib
 import ssl
@@ -6,8 +7,11 @@ from email.message import EmailMessage
 from email.utils import parseaddr
 from xml.etree.ElementTree import Element, SubElement, tostring
 from urllib.parse import urlsplit
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+from urllib.error import HTTPError, URLError
 
-from flask import Flask, render_template, request, flash, redirect, url_for, Response
+from flask import Flask, render_template, request, flash, redirect, url_for, Response, jsonify
 
 app = Flask(__name__)
 # Require a persistent secret in production; never use a publicly known fallback.
@@ -112,6 +116,63 @@ def demo_dashboard():
 @app.route('/demo-ai-call-centre')
 def demo_ai_call_centre():
     return render_template('demo_ai_call_centre.html')
+
+
+@app.post('/demo-ai-call-centre/transcribe')
+def demo_voice_transcribe():
+    if request.content_length is None or request.content_length > 2 * 1024 * 1024:
+        return jsonify(error='Rakaman terlalu besar atau kosong.'), 413
+    content_type = request.content_type.split(';')[0].lower() if request.content_type else ''
+    if content_type not in ('audio/webm', 'audio/ogg', 'audio/mp4'):
+        return jsonify(error='Format rakaman tidak disokong.'), 400
+    audio = request.get_data(cache=False)
+    if not audio:
+        return jsonify(error='Rakaman kosong.'), 400
+    key = os.environ.get('DEEPGRAM_API_KEY')
+    if not key:
+        return jsonify(error='Deepgram belum dikonfigurasi.'), 503
+    upstream = Request('https://api.deepgram.com/v1/listen?' + urlencode({
+        'model': 'nova-3', 'language': 'ms', 'smart_format': 'true'
+    }), data=audio, headers={'Authorization': 'Token ' + key, 'Content-Type': content_type}, method='POST')
+    try:
+        with urlopen(upstream, timeout=25) as result:
+            transcript = json.load(result)['results']['channels'][0]['alternatives'][0]['transcript']
+        if not isinstance(transcript, str):
+            raise ValueError('Invalid transcript')
+    except (HTTPError, URLError, TimeoutError, OSError, ValueError, KeyError, IndexError):
+        app.logger.exception('Deepgram transcription failed')
+        return jsonify(error='Transkripsi gagal. Sila taip soalan.'), 502
+    return jsonify(transcript=transcript[:300])
+
+
+@app.post('/demo-ai-call-centre/tts')
+def demo_voice_tts():
+    if request.content_length is None or request.content_length > 4096:
+        return jsonify(error='Teks terlalu panjang.'), 413
+    payload = request.get_json(silent=True)
+    text = payload.get('text') if isinstance(payload, dict) else None
+    if not isinstance(text, str) or not text.strip() or len(text) > 1000:
+        return jsonify(error='Teks tidak sah.'), 400
+    key = os.environ.get('CARTESIA_API_KEY')
+    voice = os.environ.get('CARTESIA_VOICE_ID')
+    if not key or not voice:
+        return jsonify(error='Cartesia belum dikonfigurasi.'), 503
+    upstream = Request('https://api.cartesia.ai/tts/bytes', data=json.dumps({
+        'model_id': 'sonic-3.6', 'transcript': text, 'voice': voice, 'language': 'ms',
+        'output_format': {'container': 'wav', 'encoding': 'pcm_s16le', 'sample_rate': 44100}
+    }).encode('utf-8'), headers={
+        'Authorization': 'Bearer ' + key, 'Cartesia-Version': '2026-08-14',
+        'Content-Type': 'application/json'
+    }, method='POST')
+    try:
+        with urlopen(upstream, timeout=20) as result:
+            audio = result.read(10 * 1024 * 1024 + 1)
+        if not audio or len(audio) > 10 * 1024 * 1024:
+            raise ValueError('Invalid audio')
+    except (HTTPError, URLError, TimeoutError, OSError, ValueError):
+        app.logger.exception('Cartesia synthesis failed')
+        return jsonify(error='Audio Cartesia gagal; jawapan teks masih tersedia.'), 502
+    return Response(audio, mimetype='audio/wav', headers={'Cache-Control': 'no-store'})
 
 @app.route('/demo-gerak-gempur')
 def demo_gerak_gempur():
