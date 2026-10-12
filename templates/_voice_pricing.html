@@ -33,9 +33,26 @@
 </div>
 <div class="max-w-4xl mx-auto glass-panel p-6 rounded-3xl border border-amber-500/30 mb-20" id="demo-suara">
     <h3 class="text-xl font-bold text-white mb-2">Demo suara Leea Bot</h3>
-    <p class="text-zinc-400 text-xs mb-5">Demo dalam pelayar, bukan panggilan GSM. Dengan memulakan demo suara, rakaman mikrofon dihantar ke Deepgram untuk transkripsi dan teks balasan dihantar ke Cartesia untuk suara. Jangan sebut maklumat sulit.</p>
+    <p class="text-zinc-400 text-xs mb-5">Cuba simulasi panggilan telefon dalam pelayar, bukan panggilan GSM. Rakaman mikrofon dihantar ke Deepgram untuk transkripsi dan teks balasan dihantar ke Cartesia untuk suara. Jangan sebut maklumat sulit.</p>
     {% if voice_demo_url %}
-    <iframe src="{{ voice_demo_url }}/" title="Demo suara Leea Bot" allow="microphone; autoplay" referrerpolicy="no-referrer" loading="lazy" class="w-full border-0 rounded-xl bg-zinc-900" style="height:720px"></iframe>
+    <button type="button" id="open-voice-demo" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-6 py-3 rounded-xl">☎ Cuba demo panggilan</button>
+    <dialog id="voice-demo-dialog" aria-label="Simulasi panggilan Leea Bot" class="p-0 border-0 rounded-2xl bg-zinc-900 text-white w-[min(94vw,480px)] max-h-[95dvh] overflow-hidden backdrop:bg-black/80">
+        <div class="flex items-center justify-between px-4 py-2 bg-zinc-800"><span>Demo panggilan · Bukan panggilan telefon</span><button type="button" id="close-voice-demo" class="px-3 py-1 rounded-lg bg-zinc-700 hover:bg-zinc-600" aria-label="Tutup demo">✕ Tutup</button></div>
+        <iframe id="voice-demo-frame" data-src="{{ voice_demo_url }}/" title="Skrin simulasi panggilan Leea Bot" allow="microphone; autoplay" referrerpolicy="no-referrer" class="w-full border-0 bg-zinc-900" style="height:min(820px,calc(95dvh - 44px))"></iframe>
+    </dialog>
+    <script>
+    (() => {
+        const dialog = document.getElementById('voice-demo-dialog');
+        const frame = document.getElementById('voice-demo-frame');
+        document.getElementById('open-voice-demo').addEventListener('click', () => {
+            frame.src = frame.dataset.src;
+            dialog.showModal();
+        });
+        document.getElementById('close-voice-demo').addEventListener('click', () => dialog.close());
+        dialog.addEventListener('close', () => frame.removeAttribute('src'));
+        dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
+    })();
+    </script>
     {% else %}
     <p class="text-amber-300 text-sm" role="status">Demo suara belum tersedia. Sila cuba lagi selepas sambungan servis demo dikonfigurasi.</p>
     {% endif %}
