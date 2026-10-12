@@ -1,23 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Simulator AI Call Centre | Architech Systems{% endblock %}
 {% block content %}
-<section class="max-w-2xl mx-auto px-5 py-16 text-white" aria-label="Simulator AI Call Centre">
+<section class="max-w-xl mx-auto px-5 py-8 text-white" aria-label="Simulasi panggilan Leea Bot">
   <a href="{{ url_for('pricing') }}#demo-suara" class="text-amber-400">← Kembali ke pricing</a>
-  <div class="mt-8 rounded-3xl border border-amber-500/30 bg-zinc-900 p-8 text-center">
-    <p class="text-amber-400 text-sm">SIMULATOR DEMO · BUKAN PANGGILAN TELEFON</p>
-    <h1 class="text-4xl font-bold mt-3">Leea Bot</h1>
-    <p class="text-zinc-400 mt-3">Jawapan contoh dijana dalam browser. Tiada nombor didail. Jika anda tekan Cakap, rakaman dihantar melalui server ke Deepgram untuk transkripsi; teks jawapan dihantar ke Cartesia untuk suara. Jangan sebut maklumat sulit.</p>
-    <p id="call-status" role="status" aria-live="polite" class="mt-8 text-amber-300">Tekan mula untuk cuba simulator.</p>
-    <div id="call-answer" aria-live="polite" class="mt-4 rounded-xl bg-zinc-800 p-5 text-left min-h-20">Helo! Saya Leea Bot, pembantu maya demo Architech Systems.</div>
-    <form id="call-form" class="mt-6 flex flex-col sm:flex-row gap-3" hidden>
-      <label for="call-question" class="sr-only">Soalan anda</label>
-      <input id="call-question" required maxlength="300" autocomplete="off" placeholder="Contoh: Apa itu AI Call Centre?" class="flex-1 min-w-0 rounded-xl bg-zinc-800 border border-zinc-600 p-3 text-white">
-      <button type="submit" class="rounded-xl bg-amber-500 text-zinc-950 font-bold px-5 py-3">Hantar</button>
-    </form>
+  <div class="mt-5 mx-auto max-w-md min-h-[650px] rounded-3xl bg-[#1d1e23] p-8 text-center flex flex-col shadow-2xl">
+    <p class="text-amber-400 text-xs uppercase tracking-widest">Simulasi browser · bukan panggilan telefon sebenar</p>
+    <p id="call-status" role="status" aria-live="polite" class="mt-10 text-zinc-300">Sedia untuk memanggil</p>
+    <h1 class="text-5xl font-light mt-3">Leea Bot</h1>
+    <p class="text-zinc-400 mt-2">Pembantu demo Architech Systems</p>
+    <div class="mx-auto mt-14 w-40 h-40 rounded-full bg-amber-600 flex items-center justify-center text-7xl font-semibold" aria-hidden="true">L</div>
+    <div class="mt-auto pt-10">
+    <p id="call-answer" aria-live="polite" class="mb-5 text-sm text-zinc-400">Jawapan demo ialah jawapan contoh. Jangan sebut maklumat sulit.</p>
     <div class="mt-6 flex flex-wrap justify-center gap-3">
-      <button id="call-start" type="button" class="rounded-xl bg-green-600 px-5 py-3 font-bold">☎ Mula demo</button>
-      <button id="call-mic" type="button" hidden class="rounded-xl bg-blue-600 px-5 py-3 font-bold">🎙 Cakap</button>
-      <button id="call-end" type="button" hidden class="rounded-xl bg-red-600 px-5 py-3 font-bold">Tamat demo</button>
+      <button id="call-start" type="button" class="rounded-full bg-green-600 px-8 py-4 font-bold">☎ Panggil Leea Bot</button>
+      <button id="call-mic" type="button" hidden aria-pressed="false" class="rounded-full bg-zinc-700 px-6 py-4 font-bold">🎙 Mute</button>
+      <button id="call-end" type="button" hidden class="rounded-full bg-red-600 px-8 py-4 font-bold">☎ Tamat</button>
+    </div>
+    <p class="mt-5 text-xs text-zinc-500">Benarkan mikrofon untuk berbual. Rakaman dihantar ke Deepgram; suara jawapan menggunakan Cartesia jika tersedia.</p>
     </div>
   </div>
 </section>
