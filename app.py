@@ -109,6 +109,10 @@ def pricing():
 def demo_dashboard():
     return render_template('demo_dashboard.html')
 
+@app.route('/demo-ai-call-centre')
+def demo_ai_call_centre():
+    return render_template('demo_ai_call_centre.html')
+
 @app.route('/demo-gerak-gempur')
 def demo_gerak_gempur():
     return render_template('demo_gerak_gempur.html')
