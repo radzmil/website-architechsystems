@@ -11,7 +11,14 @@
 
 		{% with messages = get_flashed_messages(with_categories=true) %}
 			{% for category, message in messages %}
-				<div class="mb-6 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">{{ message }}</div>
+					{% set notices = {
+						'invalid': ('Sila isi nama, e-mel yang sah dan mesej anda.', 'Please enter your name, a valid email address and your message.'),
+						'delivery_failed': ('Mesej tidak dapat dihantar sekarang. Sila cuba lagi atau hubungi kami melalui WhatsApp.', 'Your message could not be sent right now. Please try again or contact us via WhatsApp.'),
+						'sent': ('Terima kasih! Mesej anda telah dihantar. E-mel pengesahan telah dihantar kepada anda.', 'Thank you! Your message has been sent. A confirmation email has been sent to you.'),
+						'reply_failed': ('Mesej anda telah dihantar kepada pasukan kami, tetapi e-mel pengesahan tidak dapat dihantar.', 'Your message reached our team, but the confirmation email could not be sent.')
+					} %}
+					{% set notice = notices.get(message, (message, message)) %}
+					<div role="status" aria-live="polite" class="mb-6 rounded-xl border px-4 py-3 text-sm {{ 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' if category == 'success' else 'border-red-500/30 bg-red-500/10 text-red-300' }}" data-ms="{{ notice[0] }}" data-en="{{ notice[1] }}">{{ notice[1] }}</div>
 			{% endfor %}
 		{% endwith %}
 
@@ -32,6 +39,8 @@
 			</label>
 			<button type="submit" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm px-6 py-3 rounded-lg transition" data-ms="Hantar Mesej" data-en="Send Message">Send Message</button>
 		</form>
+		<p class="text-center text-zinc-400 text-sm mt-8" data-ms="Perlukan bantuan segera? Hubungi sokongan melalui WhatsApp." data-en="Need help? Contact support via WhatsApp.">Need help? Contact support via WhatsApp.</p>
+		<div class="text-center mt-4"><a href="https://wa.me/60183172114" target="_blank" rel="noopener noreferrer" class="inline-flex items-center rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm px-6 py-3 transition"><i class="fa-brands fa-whatsapp mr-2" aria-hidden="true"></i><span data-ms="Sembang Langsung" data-en="Live Chat">Live Chat</span></a></div>
 	</div>
 </section>
 {% endblock %}

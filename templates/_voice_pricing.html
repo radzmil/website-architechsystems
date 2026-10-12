@@ -1,0 +1,43 @@
+<div class="max-w-7xl mx-auto text-center mb-10" id="ai-call-centre">
+    <span class="text-xs font-mono text-amber-400 uppercase tracking-widest block mb-2" data-ms="// MODUL SUARA AI" data-en="// AI VOICE MODULE">// MODUL SUARA AI</span>
+    <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4" data-ms="Pakej AI Call Centre" data-en="AI Call Centre Packages">Pakej AI Call Centre</h2>
+    <p class="text-zinc-400 text-sm max-w-2xl mx-auto" data-ms="Bandingkan pakej langganan suara AI. Demo di bawah ialah simulasi dalam pelayar, bukan panggilan telefon sebenar." data-en="Compare AI voice subscriptions. The demo below is a browser simulation, not a real phone call.">Bandingkan pakej langganan suara AI. Demo di bawah ialah simulasi dalam pelayar, bukan panggilan telefon sebenar.</p>
+</div>
+{% set plans = [
+    {'name':'Starter', 'price':'200', 'setup':'150', 'minutes':'100', 'daily':'~3–5', 'number_ms':'1 nombor Malaysia', 'number_en':'1 Malaysian number', 'forward_ms':'Ya (sokongan UMobile / telco)', 'forward_en':'Yes (UMobile / telco support)', 'voice_ms':'Ultra-realistik (Cartesia / ElevenLabs)', 'voice_en':'Ultra-realistic (Cartesia / ElevenLabs)', 'stt':'Deepgram Low Latency', 'brain_ms':'Custom prompt asas (FAQ & tempahan)', 'brain_en':'Basic custom prompt (FAQ & booking)', 'payment_ms':'Tiada', 'payment_en':'Not included', 'logs_ms':'Ya (audio & teks)', 'logs_en':'Yes (audio & text)', 'summary_ms':'Tiada', 'summary_en':'Not included', 'support_ms':'Standard', 'support_en':'Standard'},
+    {'name':'Pro', 'price':'500', 'setup':'350', 'minutes':'300', 'daily':'~10–15', 'number_ms':'1 nombor eksklusif', 'number_en':'1 exclusive number', 'forward_ms':'Ya (sokongan UMobile / telco)', 'forward_en':'Yes (UMobile / telco support)', 'voice_ms':'Ultra-realistik (Cartesia / ElevenLabs)', 'voice_en':'Ultra-realistic (Cartesia / ElevenLabs)', 'stt':'Deepgram Low Latency', 'brain_ms':'Advanced custom prompt (FAQ & tempahan)', 'brain_en':'Advanced custom prompt (FAQ & booking)', 'payment_ms':'Ya (ToyyibPay / Billplz)', 'payment_en':'Yes (ToyyibPay / Billplz)', 'logs_ms':'Ya (penuh & audio terperinci)', 'logs_en':'Yes (full & detailed audio)', 'summary_ms':'Ya (ke WhatsApp pengurusan)', 'summary_en':'Yes (to management WhatsApp)', 'support_ms':'Prioriti (keutamaan)', 'support_en':'Priority'},
+    {'name':'Advance', 'price':'850', 'setup':'599', 'minutes':'500', 'daily':'~15–25', 'number_ms':'1 nombor korporat berdedikasi', 'number_en':'1 dedicated corporate number', 'forward_ms':'Ya (sokongan talian rasmi)', 'forward_en':'Yes (official line support)', 'voice_ms':'Ultra-realistik korporat', 'voice_en':'Ultra-realistic corporate voice', 'stt':'Deepgram Ultra-Low Latency', 'brain_ms':'Enterprise-grade (kompleks & automasi lanjutan)', 'brain_en':'Enterprise-grade (complex & advanced automation)', 'payment_ms':'Ya (ToyyibPay / Billplz)', 'payment_en':'Yes (ToyyibPay / Billplz)', 'logs_ms':'Ya (penuh tanpa had + audit)', 'logs_en':'Yes (unlimited full logs + audit)', 'summary_ms':'Ya (laporan harian & analitik)', 'summary_en':'Yes (daily reports & analytics)', 'support_ms':'VIP keutamaan tinggi + kemas kini skrip', 'support_en':'High-priority VIP + script updates'}
+] %}
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+    {% for plan in plans %}
+    <article class="glass-panel p-7 rounded-3xl border border-amber-500/30 flex flex-col">
+        <h3 class="text-2xl font-bold text-white mb-3">{{ plan.name }}</h3>
+        <p class="text-3xl font-extrabold text-white">RM{{ plan.price }} <span class="text-xs font-normal text-zinc-400" data-ms="/ bulan" data-en="/ month">/ bulan</span></p>
+        <p class="text-xs text-amber-300 mb-6" data-ms="+ RM{{ plan.setup }} yuran pemasangan sekali sahaja" data-en="+ RM{{ plan.setup }} one-time setup fee">+ RM{{ plan.setup }} yuran pemasangan sekali sahaja</p>
+        <dl class="space-y-3 text-xs text-zinc-300 mb-7 flex-1">
+            <div><dt class="text-amber-400" data-ms="Kuota bulanan" data-en="Monthly quota">Kuota bulanan</dt><dd>{{ plan.minutes }} <span data-ms="minit" data-en="minutes">minit</span></dd></div>
+            <div><dt class="text-amber-400" data-ms="Anggaran panggilan harian" data-en="Estimated daily calls">Anggaran panggilan harian</dt><dd>{{ plan.daily }}</dd></div>
+            <div><dt class="text-amber-400" data-ms="Nombor talian maya" data-en="Virtual number">Nombor talian maya</dt><dd data-ms="{{ plan.number_ms }}" data-en="{{ plan.number_en }}">{{ plan.number_ms }}</dd></div>
+            <div><dt class="text-amber-400" data-ms="Pengalihan panggilan" data-en="Call forwarding">Pengalihan panggilan</dt><dd data-ms="{{ plan.forward_ms }}" data-en="{{ plan.forward_en }}">{{ plan.forward_ms }}</dd></div>
+            <div><dt class="text-amber-400" data-ms="Operasi AI" data-en="AI availability">Operasi AI</dt><dd>24/7</dd></div>
+            <div><dt class="text-amber-400" data-ms="Suara (TTS) & pengecaman (STT)" data-en="Voice (TTS) & recognition (STT)">Suara (TTS) & pengecaman (STT)</dt><dd data-ms="{{ plan.voice_ms }}" data-en="{{ plan.voice_en }}">{{ plan.voice_ms }}</dd><dd>{{ plan.stt }}</dd></div>
+            <div><dt class="text-amber-400" data-ms="Keupayaan AI" data-en="AI capability">Keupayaan AI</dt><dd data-ms="{{ plan.brain_ms }}" data-en="{{ plan.brain_en }}">{{ plan.brain_ms }}</dd></div>
+            <div><dt class="text-amber-400" data-ms="Pautan bayaran WhatsApp automatik" data-en="Automatic WhatsApp payment link">Pautan bayaran WhatsApp automatik</dt><dd data-ms="{{ plan.payment_ms }}" data-en="{{ plan.payment_en }}">{{ plan.payment_ms }}</dd></div>
+            <div><dt class="text-amber-400" data-ms="Rakaman & log" data-en="Recordings & logs">Rakaman & log</dt><dd data-ms="{{ plan.logs_ms }}" data-en="{{ plan.logs_en }}">{{ plan.logs_ms }}</dd></div>
+            <div><dt class="text-amber-400" data-ms="Ringkasan" data-en="Summary">Ringkasan</dt><dd data-ms="{{ plan.summary_ms }}" data-en="{{ plan.summary_en }}">{{ plan.summary_ms }}</dd></div>
+            <div><dt class="text-amber-400" data-ms="Sokongan" data-en="Support">Sokongan</dt><dd data-ms="{{ plan.support_ms }}" data-en="{{ plan.support_en }}">{{ plan.support_ms }}</dd></div>
+        </dl>
+        <a href="{{ url_for('contact') }}" class="block text-center bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs py-3 rounded-xl" data-ms="Tanya tentang pakej" data-en="Enquire about this plan">Tanya tentang pakej</a>
+    </article>
+    {% endfor %}
+</div>
+<div class="max-w-4xl mx-auto glass-panel p-6 rounded-3xl border border-amber-500/30 mb-20" id="demo-suara">
+    <h3 class="text-xl font-bold text-white mb-2" data-ms="Cuba demo suara Leea Bot" data-en="Try the Leea Bot voice demo">Cuba demo suara Leea Bot</h3>
+    <p class="text-zinc-400 text-xs mb-5" data-ms="Demo pelayar sahaja: benarkan akses mikrofon untuk bercakap. Tidak membuat atau menerima panggilan telefon, dan tidak mewakili semua ciri pakej." data-en="Browser-only demo: allow microphone access to speak. It does not make or receive phone calls and does not represent every plan feature.">Demo pelayar sahaja: benarkan akses mikrofon untuk bercakap. Tidak membuat atau menerima panggilan telefon, dan tidak mewakili semua ciri pakej.</p>
+    {% if voice_demo_url %}
+    <iframe src="{{ voice_demo_url }}" title="Demo suara Leea Bot" allow="microphone; autoplay" loading="lazy" referrerpolicy="no-referrer" class="w-full min-h-[680px] rounded-xl border border-zinc-700 bg-zinc-950"></iframe>
+    <p class="text-zinc-400 text-xs mt-3"><a href="{{ voice_demo_url }}" target="_blank" rel="noopener noreferrer" class="text-amber-300 underline" data-ms="Buka demo dalam tab baharu ↗" data-en="Open demo in a new tab ↗">Buka demo dalam tab baharu ↗</a></p>
+    {% else %}
+    <p class="text-amber-300 text-sm" role="status" data-ms="Demo suara belum tersedia. Sila hubungi kami untuk demonstrasi." data-en="Voice demo is not available yet. Contact us for a demonstration.">Demo suara belum tersedia. Sila hubungi kami untuk demonstrasi.</p>
+    {% endif %}
+</div>
