@@ -97,7 +97,10 @@ def solutions():
 
 @app.route('/pricing')
 def pricing():
-    return render_template('pricing.html')
+    demo_url = os.environ.get('VOICE_DEMO_URL', '').strip().rstrip('/')
+    if not demo_url.startswith('https://'):
+        demo_url = ''
+    return render_template('pricing.html', voice_demo_url=demo_url)
 
 @app.route('/demo-dashboard')
 def demo_dashboard():
