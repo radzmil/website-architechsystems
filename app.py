@@ -30,6 +30,21 @@ if _local_env.is_file():
 app = Flask(__name__)
 # Require a persistent secret in production; never use a publicly known fallback.
 app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(32)
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
+
+
+@app.before_request
+def check_post_origin():
+    if request.method != 'POST':
+        return None
+    origin = request.headers.get('Origin')
+    if origin:
+        allowed = urlsplit(PUBLIC_URL)
+        supplied = urlsplit(origin)
+        if (supplied.scheme, supplied.netloc) != (allowed.scheme, allowed.netloc) and (
+                supplied.scheme, supplied.netloc) != (request.scheme, request.host):
+            return jsonify(error='Asal permintaan tidak dibenarkan.'), 403
+    return None
 
 SUPPORT_EMAIL = 'support@architechsystems.my'
 PUBLIC_URL = 'https://www.architechsystems.my'
@@ -249,10 +264,16 @@ def policy():
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'POST':
+        if request.content_length is None or request.content_length > 8192:
+            return render_template('contact.html'), 413
+        if request.form.get('website'):
+            return render_template('contact.html'), 400
         name = request.form.get('name', '').strip()
         email = request.form.get('email', '').strip()
         message = request.form.get('message', '').strip()
-        if not name or not message or not email or parseaddr(email)[1] != email or '@' not in email or '\n' in email or '\r' in email:
+        if (not name or len(name) > 120 or not message or len(message) > 4000 or
+                not email or len(email) > 254 or parseaddr(email)[1] != email or
+                '@' not in email or '\n' in email or '\r' in email):
             flash('invalid', 'error')
             return render_template('contact.html'), 400
 

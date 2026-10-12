@@ -22,6 +22,22 @@
   let abort = null;
   let format = null;
   let history = [];
+  let sessionTimer = null;
+  let emptyTranscripts = 0;
+
+  async function jsonResponse(response, fallback) {
+    const data = await response.json().catch(() => null);
+    if (!response.ok) {
+      if (response.status === 429) {
+        const error = new Error('Terlalu banyak permintaan. Cuba lagi sebentar.');
+        error.status = 429;
+        throw error;
+      }
+      throw new Error(data?.error || fallback);
+    }
+    if (!data) throw new Error(fallback);
+    return data;
+  }
 
   function stopTone() {
     clearInterval(toneTimer);
@@ -78,13 +94,22 @@
             method: 'POST', headers: { 'Content-Type': format },
             body: new Blob(chunks, { type: format }), signal: abort.signal
           });
-          const data = await response.json();
-          if (!response.ok) throw new Error(data.error || 'Transkripsi gagal.');
+          const data = await jsonResponse(response, 'Transkripsi gagal. Sila cuba lagi.');
           if (!active || muted || id !== token) return;
-          if (data.transcript?.trim()) await reply(data.transcript.trim(), id);
-          else listen(id);
+          if (data.transcript?.trim()) {
+            emptyTranscripts = 0;
+            await reply(data.transcript.trim(), id);
+          } else if (++emptyTranscripts >= 3) {
+            hangup();
+            status.textContent = 'Tiada suara dikesan. Tekan Panggil untuk cuba semula.';
+          } else listen(id);
         } catch (error) {
           if (active && !muted && id === token) {
+            if (error.status === 429) {
+              hangup();
+              status.textContent = error.message;
+              return;
+            }
             status.textContent = error.message || 'Transkripsi gagal.';
             timer = setTimeout(() => listen(id), 1200);
           }
@@ -142,8 +167,7 @@
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: question, history: history.slice(-8) }), signal: abort.signal
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'API chat tidak tersedia.');
+      const data = await jsonResponse(response, 'API chat tidak tersedia. Sila cuba lagi.');
       if (!active || muted || id !== token) return;
       history.push({ role: 'user', content: question }, { role: 'assistant', content: data.reply });
       history = history.slice(-8);
@@ -151,6 +175,11 @@
       await speak(data.reply, id);
     } catch (error) {
       if (active && !muted && id === token) {
+        if (error.status === 429) {
+          hangup();
+          status.textContent = error.message;
+          return;
+        }
         answer.textContent = error.message || 'Leea Bot tidak dapat menjawab sekarang.';
         status.textContent = answer.textContent;
         timer = setTimeout(() => listen(id), 1500);
@@ -162,6 +191,7 @@
     active = false;
     token++;
     clearTimeout(timer);
+    clearTimeout(sessionTimer);
     stopTone();
     abort?.abort();
     if (recorder?.state === 'recording') recorder.stop();
@@ -182,7 +212,14 @@
     active = true;
     muted = false;
     history = [];
+    emptyTranscripts = 0;
     const id = ++token;
+    sessionTimer = setTimeout(() => {
+      if (active && id === token) {
+        hangup();
+        status.textContent = 'Demo tamat selepas 3 minit. Tekan Panggil untuk cuba lagi.';
+      }
+    }, 180000);
     start.hidden = true;
     end.hidden = false;
     mic.disabled = true;
