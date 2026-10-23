@@ -1,22 +1,45 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="max-w-7xl mx-auto px-6 py-20 min-h-[60vh]">
-    <p class="text-indigo-400 text-xs font-mono uppercase tracking-widest mb-3">Architech Systems // Digital Marketplace</p>
-    <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4" data-ms="Produk Digital" data-en="Digital Products">Digital Products</h1>
-    <p class="text-zinc-400 max-w-2xl mb-10" data-ms="Terokai produk digital kami. Pembayaran dan penghantaran automatik belum tersedia." data-en="Explore our digital products. Online checkout and automatic delivery are not available yet.">Explore our digital products. Online checkout and automatic delivery are not available yet.</p>
+<section class="max-w-7xl mx-auto px-6 py-14 md:py-20 min-h-[60vh]">
+    <header class="border-b border-zinc-800 pb-10 mb-10">
+        <p class="text-indigo-400 text-xs font-mono uppercase tracking-widest mb-3">Architech Systems // Digital Marketplace</p>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4" data-ms="Produk Digital" data-en="Digital Products">Digital Products</h1>
+        <p class="text-zinc-400 max-w-2xl leading-relaxed" data-ms="Terokai koleksi produk digital kami. Pembelian dalam talian dan penghantaran automatik belum tersedia." data-en="Explore our digital product collection. Online checkout and automatic delivery are not available yet.">Explore our digital product collection. Online checkout and automatic delivery are not available yet.</p>
+    </header>
     {% if catalog_unavailable %}
     <p role="status" class="rounded-xl border border-amber-500/30 bg-amber-500/10 p-6 text-amber-200" data-ms="Katalog belum tersedia. Sila cuba lagi kemudian." data-en="The catalog is unavailable. Please try again later.">The catalog is unavailable. Please try again later.</p>
     {% elif not products %}
     <p role="status" class="rounded-xl border border-zinc-700 bg-zinc-900 p-6 text-zinc-300" data-ms="Belum ada produk untuk dipaparkan." data-en="No products are available yet.">No products are available yet.</p>
     {% else %}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <h2 class="text-xl font-bold text-white" data-ms="Katalog Produk" data-en="Product Catalog">Product Catalog</h2>
+        <span class="text-sm text-zinc-400">{{ products|length }} <span data-ms="produk" data-en="products">products</span></span>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
         {% for product in products %}
-        <article class="glass-panel rounded-2xl p-7 flex flex-col">
-            {% if product.image_url %}<img src="{{ product.image_url }}" alt="Imej {{ product.name }}" loading="lazy" class="w-full aspect-video object-cover rounded-xl mb-5" referrerpolicy="no-referrer">{% endif %}
-            <h2 class="text-xl font-bold text-white mb-3">{{ product.name }}</h2>
-            <p class="text-sm text-zinc-400 whitespace-pre-line break-words flex-1">{{ product.description }}</p>
-            <p class="text-2xl text-indigo-300 font-bold mt-6">RM{{ product.price }}</p>
-            <span class="text-xs text-zinc-500 mt-3" data-ms="Pembelian dalam talian akan datang" data-en="Online checkout coming soon">Online checkout coming soon</span>
+        <article class="glass-panel rounded-2xl overflow-hidden flex flex-col h-full">
+            <div class="aspect-[4/3] bg-gradient-to-br from-indigo-950/60 via-zinc-900 to-zinc-950 border-b border-zinc-800 flex items-center justify-center overflow-hidden">
+                {% if product.image_url %}
+                <img src="{{ product.image_url }}" alt="Imej {{ product.name }}" loading="lazy" class="w-full h-full object-cover" referrerpolicy="no-referrer">
+                {% else %}
+                <div class="flex flex-col items-center gap-3 text-indigo-300/60" aria-hidden="true">
+                    <i class="fa-solid fa-box-open text-5xl"></i>
+                    <span class="font-mono text-[10px] uppercase tracking-[0.2em]">Architech Digital</span>
+                </div>
+                {% endif %}
+            </div>
+            <div class="p-6 flex flex-col flex-1 min-w-0">
+                <span class="text-[11px] font-mono uppercase tracking-widest text-indigo-400 mb-3" data-ms="Produk digital" data-en="Digital product">Digital product</span>
+                <h3 class="text-lg font-bold text-white mb-3 break-words">{{ product.name }}</h3>
+                <p class="text-sm text-zinc-400 whitespace-pre-line break-words leading-relaxed flex-1">{{ product.description }}</p>
+                <div class="mt-6 pt-5 border-t border-zinc-800 flex flex-wrap items-end justify-between gap-3">
+                    <div>
+                        <span class="block text-xs text-zinc-500 mb-1" data-ms="Harga" data-en="Price">Price</span>
+                        <span class="text-2xl text-indigo-300 font-bold">RM{{ product.price }}</span>
+                    </div>
+                    <span class="rounded-lg border border-zinc-700 bg-zinc-800/50 px-3 py-2 text-xs text-zinc-400" data-ms="Pembelian akan datang" data-en="Checkout coming soon">Checkout coming soon</span>
+                </div>
+            </div>
         </article>
         {% endfor %}
     </div>
