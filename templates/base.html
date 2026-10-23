@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Architech Systems{% endblock %}</title>
+    <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_description }}">
     <link rel="canonical" href="{{ seo_canonical }}">
     <meta name="robots" content="{% if seo_noindex %}noindex, follow{% else %}index, follow{% endif %}">
@@ -197,9 +197,9 @@
                 <a href="/policy" class="hover:text-zinc-400" data-ms="Terma Perkhidmatan" data-en="Terms of Service">Terms of Service</a>
             </div>
         </div>
-        <div class="max-w-7xl mx-auto mt-8 flex justify-center">
-            <a href="https://billing.exabytes.my/mypanel/aff.php?aff=8106434" target="_blank" rel="sponsored noopener noreferrer" aria-label="Exabytes affiliate">
-                <img src="https://www.exabytes.my/images/billing/affiliate/all-in-one/728x90-may26-affiliate-banner.gif" width="728" height="90" alt="Exabytes affiliate banner" loading="lazy" class="max-w-full h-auto">
+        <div class="max-w-7xl mx-auto mt-8">
+            <a href="https://billing.exabytes.my/mypanel/aff.php?aff=8106434" target="_blank" rel="sponsored noopener noreferrer" aria-label="Exabytes affiliate" class="block w-full">
+                <img src="https://www.exabytes.my/images/billing/affiliate/all-in-one/728x90-may26-affiliate-banner.gif" width="728" height="90" alt="Exabytes affiliate banner" loading="lazy" class="block w-full h-auto">
             </a>
         </div>
     </footer>
