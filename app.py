@@ -152,11 +152,11 @@ def marketplace():
         try:
             with psycopg2.connect(database_url, connect_timeout=5) as conn:
                 with conn.cursor() as cursor:
-                    cursor.execute('''SELECT id, name, description, price_sen
+                    cursor.execute('''SELECT id, name, description, price_sen, image_url
                         FROM marketplace_products WHERE active = TRUE
                         ORDER BY created_at DESC, id DESC LIMIT 100''')
                     products = [dict(id=row[0], name=row[1], description=row[2],
-                                     price=f'{row[3] // 100}.{row[3] % 100:02d}')
+                                     price=f'{row[3] // 100}.{row[3] % 100:02d}', image_url=row[4])
                                 for row in cursor.fetchall()]
         except psycopg2.Error:
             app.logger.exception('Marketplace catalog unavailable')

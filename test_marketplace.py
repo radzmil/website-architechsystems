@@ -11,8 +11,8 @@ class Cursor:
     def __exit__(self, *args): return False
     def execute(self, sql): self.sql = sql
     def fetchall(self):
-        return [(1, 'Koleksi Aset', 'Penerangan', 1990),
-                (2, '<script>alert(1)</script>', 'https://drive.google.com/secret', 2500)]
+        return [(1, 'Koleksi Aset', 'Penerangan', 1990, 'https://example.com/product.jpg'),
+                (2, '<script>alert(1)</script>', 'https://drive.google.com/secret', 2500, '')]
 
 
 class Connection:
@@ -35,6 +35,7 @@ class MarketplaceTests(unittest.TestCase):
         self.assertIn('WHERE active = TRUE', cursor.sql)
         self.assertNotIn('delivery_url', cursor.sql)
         self.assertIn(b'RM19.90', response.data)
+        self.assertIn(b'https://example.com/product.jpg', response.data)
         self.assertNotIn(b'<script>alert(1)</script>', response.data)
         self.assertIn(b'&lt;script&gt;', response.data)
         self.assertEqual(response.headers['Cache-Control'], 'no-store')
