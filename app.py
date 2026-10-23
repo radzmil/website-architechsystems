@@ -13,6 +13,7 @@ from urllib.error import HTTPError, URLError
 from pathlib import Path
 
 from flask import Flask, render_template, request, flash, redirect, url_for, Response, jsonify
+import psycopg2
 
 # Local development only: hosting environment variables take precedence.
 _local_env = Path(__file__).with_name('.env')
@@ -24,7 +25,7 @@ if _local_env.is_file():
         _name, _value = _line.split('=', 1)
         _name = _name.strip()
         if _name in ('ASAI_API_KEY', 'ASAI_MODEL', 'API_BASE_URL',
-                     'DEEPGRAM_API_KEY', 'CARTESIA_API_KEY', 'CARTESIA_VOICE_ID'):
+                     'DEEPGRAM_API_KEY', 'CARTESIA_API_KEY', 'CARTESIA_VOICE_ID', 'DATABASE_URL'):
             os.environ.setdefault(_name, _value.strip().strip('"\''))
 
 app = Flask(__name__)
@@ -52,6 +53,7 @@ SEO_PAGES = {
     '/': ('Architech Systems | Business Automation in Malaysia', 'Architech Systems builds business automation, WhatsApp solutions and software systems for Malaysian organisations.'),
     '/solutions': ('Business Automation Solutions | Architech Systems Malaysia', 'Explore software engineering, WhatsApp automation and business system solutions by Architech Systems in Malaysia.'),
     '/pricing': ('Products and Subscriptions | Architech Systems Malaysia', 'Explore Architech Systems products, subscriptions and interactive demonstrations for businesses in Malaysia.'),
+    '/marketplace': ('Digital Marketplace | Architech Systems Malaysia', 'Explore digital products from Architech Systems Malaysia.'),
     '/about': ('About Architech Systems | Malaysian Software Engineering', 'Learn about Architech Systems, a registered software engineering business in Malaysia.'),
     '/policy': ('Privacy Policy and Terms | Architech Systems', 'Read the privacy policy and service terms for Architech Systems.'),
     '/contact': ('Contact Architech Systems | Malaysia', 'Contact Architech Systems about business automation and software solutions in Malaysia.'),
@@ -137,6 +139,32 @@ def pricing():
             or parsed.path or parsed.query or parsed.fragment):
         demo_url = None
     return render_template('pricing.html', voice_demo_url=demo_url)
+
+
+@app.get('/marketplace')
+def marketplace():
+    products = []
+    catalog_unavailable = False
+    database_url = os.environ.get('DATABASE_URL')
+    if not database_url:
+        catalog_unavailable = True
+    else:
+        try:
+            with psycopg2.connect(database_url, connect_timeout=5) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute('''SELECT id, name, description, price_sen
+                        FROM marketplace_products WHERE active = TRUE
+                        ORDER BY created_at DESC, id DESC LIMIT 100''')
+                    products = [dict(id=row[0], name=row[1], description=row[2],
+                                     price=f'{row[3] // 100}.{row[3] % 100:02d}')
+                                for row in cursor.fetchall()]
+        except psycopg2.Error:
+            app.logger.exception('Marketplace catalog unavailable')
+            catalog_unavailable = True
+    response = Response(render_template('marketplace.html', products=products,
+                                        catalog_unavailable=catalog_unavailable))
+    response.headers['Cache-Control'] = 'no-store'
+    return response
 
 @app.route('/demo-dashboard')
 def demo_dashboard():
