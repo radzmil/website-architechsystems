@@ -17,83 +17,40 @@
     <div class="max-w-7xl mx-auto mb-8 flex justify-center">
         <a href="{{ url_for('demo_dashboard') }}" class="inline-flex w-64 max-w-full min-h-12 items-center justify-center rounded-xl border border-indigo-500/50 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-2 text-center text-white text-xs font-semibold leading-snug transition focus:outline-none focus:ring-2 focus:ring-indigo-300" aria-label="Try Demo: buka simulator dashboard klien LeeA" data-ms="Try Demo · Dashboard Klien ↗" data-en="Try Demo · Client Dashboard ↗">Try Demo · Dashboard Klien ↗</a>
     </div>
+    {% set automation_plans = [
+        {'name':'Basic', 'setup':'149', 'lines':'1', 'quote':false, 'autopilot':false, 'broadcast':false, 'followup':false, 'vip':false, 'booking':false},
+        {'name':'Pro', 'setup':'499', 'lines':'2', 'quote':true, 'autopilot':true, 'broadcast':false, 'followup':false, 'vip':false, 'booking':false},
+        {'name':'Advance', 'setup':'999', 'lines':'Sehingga 5', 'quote':true, 'autopilot':true, 'broadcast':true, 'followup':true, 'vip':true, 'booking':true}
+    ] %}
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-        
-        <!-- Pelan Basic -->
-        <div class="glass-panel p-8 rounded-3xl border border-zinc-800 relative overflow-hidden flex flex-col justify-between">
-            <div>
-                <div class="text-indigo-400 font-mono text-xs mb-1" data-ms="BASIC" data-en="BASIC">BASIC</div>
-                <h3 class="text-2xl font-bold text-white mb-2" data-ms="Pelan Asas" data-en="Basic Plan">Basic Plan</h3>
-                <div class="text-3xl font-extrabold text-white mb-2">RM130 <span class="text-xs font-normal text-zinc-400" data-ms="/ Bulan" data-en="/ Month">/ Bulan</span></div>
-                <div class="text-[11px] font-mono text-indigo-300 mb-6 leading-tight" data-ms="+ RM149 Kos Setup Bot Khas (Mengikut SOP & Kehendak Syarikat)" data-en="+ RM149 Custom Bot Setup (Per Company SOP & Needs)">+ RM149 Kos Setup Bot Khas (Mengikut SOP & Kehendak Syarikat)</div>
-                <p class="text-zinc-400 text-sm leading-relaxed mb-6" data-ms="Penyelesaian untuk fasa permulaan operasi digital dan automasi asas." data-en="Solutions for the initial phase of digital operations and basic automation.">
-                    Penyelesaian untuk fasa permulaan operasi digital dan automasi asas.
-                </p>
-                <ul class="space-y-3 text-xs text-zinc-300 font-mono mb-8">
-                    <li class="flex items-center"><i class="fa-solid fa-check text-indigo-400 mr-2"></i> <span data-ms="1 Nod Bot WhatsApp" data-en="1 WhatsApp Bot Node">1 Nod Bot WhatsApp</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-indigo-400 mr-2"></i> <span data-ms="Daily Cloud Backup (Sandaran Awan Harian)" data-en="Daily Cloud Backup">Daily Cloud Backup (Sandaran Awan Harian)</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-indigo-400 mr-2"></i> <span data-ms="Modul E-Dompet & Affiliate Ejen" data-en="E-Wallet & Agent Affiliate Module">Modul E-Dompet & Affiliate Ejen</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-indigo-400 mr-2"></i> <span data-ms="Sokongan Keutamaan 24/7" data-en="24/7 Priority Support">Sokongan Keutamaan 24/7</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-indigo-400 mr-2"></i> <span data-ms="Pemantauan Sistem & Bot Pintar" data-en="Smart System & Bot Monitoring">Pemantauan Sistem & Bot Pintar</span></li>
-                </ul>
-            </div>
-            <a href="https://wa.me/" class="w-full block text-center bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs py-3 rounded-xl transition uppercase tracking-wider" data-ms="Pilih Pelan Asas" data-en="Select Basic Plan">
-                Select Basic Plan
-            </a>
-        </div>
-
-        <!-- Pelan Pro -->
-        <div class="glass-panel p-8 rounded-3xl border border-indigo-500/50 relative overflow-hidden flex flex-col justify-between bg-gradient-to-b from-indigo-950/30 to-zinc-950/50 shadow-[0_0_30px_rgba(99,102,241,0.15)]">
-            <div class="absolute top-0 right-0 bg-indigo-600 text-white text-[10px] font-mono px-3 py-1 rounded-bl-xl uppercase tracking-wider" data-ms="PILIHAN UTAMA" data-en="POPULAR">POPULAR</div>
-            <div>
-                <div class="text-indigo-400 font-mono text-xs mb-1" data-ms="PRO" data-en="PRO">PRO</div>
-                <h3 class="text-2xl font-bold text-white mb-2" data-ms="Pelan Profesional" data-en="Professional Plan">Professional Plan</h3>
-                <div class="text-3xl font-extrabold text-white mb-2">RM130 <span class="text-xs font-normal text-zinc-400" data-ms="/ Bulan" data-en="/ Month">/ Bulan</span></div>
-                <div class="text-[11px] font-mono text-indigo-300 mb-6 leading-tight" data-ms="+ RM499 Kos Setup Bot Khas (Mengikut SOP & Kehendak Syarikat)" data-en="+ RM499 Custom Bot Setup (Per Company SOP & Needs)">+ RM499 Kos Setup Bot Khas (Mengikut SOP & Kehendak Syarikat)</div>
-                <p class="text-zinc-400 text-sm leading-relaxed mb-6" data-ms="Disyorkan untuk pengurusan operasi korporat yang menyeluruh dan automasi pintar." data-en="Recommended for comprehensive corporate operations management and smart automation.">
-                    Disyorkan untuk pengurusan operasi korporat yang menyeluruh dan automasi pintar.
-                </p>
-                <ul class="space-y-3 text-xs text-zinc-300 font-mono mb-8">
-                    <li class="flex items-center"><i class="fa-solid fa-check text-indigo-400 mr-2"></i> <span data-ms="1 Nod Bot WhatsApp Lanjutan" data-en="1 Advanced WhatsApp Bot Node">1 Nod Bot WhatsApp Lanjutan</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-indigo-400 mr-2"></i> <span data-ms="Daily Cloud Backup (Sandaran Awan Harian)" data-en="Daily Cloud Backup">Daily Cloud Backup (Sandaran Awan Harian)</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-indigo-400 mr-2"></i> <span data-ms="Modul E-Dompet & Affiliate Ejen" data-en="E-Wallet & Agent Affiliate Module">Modul E-Dompet & Affiliate Ejen</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-indigo-400 mr-2"></i> <span data-ms="Integrasi Gerbang Pembayaran Dalam Talian" data-en="Online Payment Gateway Integration">Integrasi Gerbang Pembayaran Dalam Talian</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-indigo-400 mr-2"></i> <span data-ms="Hantar Laporan & Log Bot Terus ke Emel Admin" data-en="Send Bot Logs & Reports Directly to Admin Email">Hantar Laporan & Log Bot Terus ke Emel Admin</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-indigo-400 mr-2"></i> <span data-ms="Sokongan Keutamaan 24/7" data-en="24/7 Priority Support">Sokongan Keutamaan 24/7</span></li>
-                </ul>
-            </div>
-            <a href="https://wa.me/" class="w-full block text-center bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-3 rounded-xl transition shadow-lg shadow-indigo-500/25 uppercase tracking-wider" data-ms="Langgan Profesional" data-en="Subscribe Professional">
-                Subscribe Professional
-            </a>
-        </div>
-
-        <!-- Pelan Adv -->
-        <div class="glass-panel p-8 rounded-3xl border border-purple-500/50 relative overflow-hidden flex flex-col justify-between bg-gradient-to-b from-purple-950/30 to-zinc-950/50 shadow-[0_0_30px_rgba(168,85,247,0.15)]">
-            <div class="absolute top-0 right-0 bg-purple-600 text-white text-[10px] font-mono px-3 py-1 rounded-bl-xl uppercase tracking-wider" data-ms="MAKSIMUM" data-en="MAXIMUM">MAKSIMUM</div>
-            <div>
-                <div class="text-purple-400 font-mono text-xs mb-1" data-ms="ADV" data-en="ADV">ADV</div>
-                <h3 class="text-2xl font-bold text-white mb-2" data-ms="Pelan Lanjutan" data-en="Advanced Plan">Advanced Plan</h3>
-                <div class="text-3xl font-extrabold text-white mb-2">RM130 <span class="text-xs font-normal text-zinc-400" data-ms="/ Bulan" data-en="/ Month">/ Bulan</span></div>
-                <div class="text-[11px] font-mono text-purple-300 mb-6 leading-tight" data-ms="+ RM999 Kos Setup Bot Khas (Mengikut SOP & Kehendak Syarikat)" data-en="+ RM999 Custom Bot Setup (Per Company SOP & Needs)">+ RM999 Kos Setup Bot Khas (Mengikut SOP & Kehendak Syarikat)</div>
-                <p class="text-zinc-400 text-sm leading-relaxed mb-6" data-ms="Infrastruktur kapasiti tinggi bagi tahap agensi komersial dan institusi besar dengan automasi penuh." data-en="High-capacity infrastructure for commercial agencies and large institutions with full automation.">
-                    Infrastruktur kapasiti tinggi bagi tahap agensi komersial dan institusi besar dengan automasi penuh.
-                </p>
-                <ul class="space-y-3 text-xs text-zinc-300 font-mono mb-8">
-                    <li class="flex items-center"><i class="fa-solid fa-check text-purple-400 mr-2"></i> <span data-ms="Berbilang Nod Bot WhatsApp (Multi-Node)" data-en="Multiple WhatsApp Bot Nodes">Berbilang Nod Bot WhatsApp (Multi-Node)</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-purple-400 mr-2"></i> <span data-ms="Daily Cloud Backup (Sandaran Awan Harian)" data-en="Daily Cloud Backup">Daily Cloud Backup (Sandaran Awan Harian)</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-purple-400 mr-2"></i> <span data-ms="Modul E-Dompet & Affiliate Ejen Lanjutan" data-en="Advanced E-Wallet & Agent Affiliate Module">Modul E-Dompet & Affiliate Ejen Lanjutan</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-purple-400 mr-2"></i> <span data-ms="Integrasi Gerbang Pembayaran Pelbagai Saluran" data-en="Multi-Channel Payment Gateway Integration">Integrasi Gerbang Pembayaran Pelbagai Saluran</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-purple-400 mr-2"></i> <span data-ms="Laporan Analisis Automatik & Log ke Emel Admin" data-en="Automated Analytics & Logs to Admin Email">Laporan Analisis Automatik & Log ke Emel Admin</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-purple-400 mr-2"></i> <span data-ms="Automasi Aliran Kerja Tanpa Had (Unlimited Workflows)" data-en="Unlimited Workflow Automation">Automasi Aliran Kerja Tanpa Had (Unlimited Workflows)</span></li>
-                    <li class="flex items-center"><i class="fa-solid fa-check text-purple-400 mr-2"></i> <span data-ms="Sokongan Teknikal Keutamaan VIP 24/7" data-en="VIP 24/7 Priority Technical Support">Sokongan Teknikal Keutamaan VIP 24/7</span></li>
-                </ul>
-            </div>
-            <a href="https://wa.me/" class="w-full block text-center bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs py-3 rounded-xl transition shadow-lg shadow-purple-500/25 uppercase tracking-wider" data-ms="Hubungi Pasukan" data-en="Contact Team">
-                Contact Team
-            </a>
-        </div>
+        {% for plan in automation_plans %}
+        <article class="glass-panel p-8 rounded-3xl border border-indigo-500/30 flex flex-col">
+            <h3 class="text-2xl font-bold text-white mb-2">Pakej {{ plan.name }}</h3>
+            <p class="text-3xl font-extrabold text-white">RM130 <span class="text-xs font-normal text-zinc-400" data-ms="/ Bulan" data-en="/ Month">/ Bulan</span></p>
+            <p class="text-xs text-indigo-300 mb-6" data-ms="+ RM{{ plan.setup }} yuran pemasangan sekali sahaja" data-en="+ RM{{ plan.setup }} one-time setup fee">+ RM{{ plan.setup }} yuran pemasangan sekali sahaja</p>
+            <dl class="space-y-2 text-xs text-zinc-300 mb-8 flex-1">
+                <div><dt class="text-indigo-400" data-ms="Moel Bot v1" data-en="Moel Bot v1">Moel Bot v1</dt><dd>200mb</dd></div>
+                <div><dt class="text-indigo-400" data-ms="Kapasiti talian WhatsApp" data-en="WhatsApp line capacity">Kapasiti talian WhatsApp</dt><dd data-ms="{{ plan.lines }} talian" data-en="{{ plan.lines }} lines">{{ plan.lines }} talian</dd></div>
+                {% set features = [
+                    ('Pembantu AI 24/7 (Persona Manusia)', '24/7 AI assistant (Human persona)', true),
+                    ('Bilik kebal data & pemantauan live', 'Data vault & live monitoring', true),
+                    ('Pengiraan sebut harga dinamik (kira harga/pos)', 'Dynamic quotations (price/shipping)', plan.quote),
+                    ('Pembayaran kod QR manual', 'Manual QR code payment', true),
+                    ('Pembayaran autopilot (FPX / ToyyibPay & QR)', 'Autopilot payment (FPX / ToyyibPay & QR)', plan.autopilot),
+                    ('Hebahan promosi pukal (broadcast)', 'Bulk promotional broadcasts', plan.broadcast),
+                    ('Modul pengurusan komisen affiliate', 'Affiliate commission management', true),
+                    ('Sistem follow-up prospek automatik', 'Automated prospect follow-up', plan.followup),
+                    ('Amaran VIP / tempahan besar ke WhatsApp & e-mel', 'VIP / large booking alerts via WhatsApp & email', plan.vip),
+                    ('Sistem kalendar & slot masa pintar (booking sync)', 'Smart calendar & time slots (booking sync)', plan.booking)
+                ] %}
+                {% for label_ms, label_en, included in features %}
+                <div class="flex gap-2"><dt class="flex-1" data-ms="{{ label_ms }}" data-en="{{ label_en }}">{{ label_ms }}</dt><dd class="font-bold {{ 'text-emerald-400' if included else 'text-rose-400' }}" data-ms="{{ 'Ada' if included else 'Tiada' }}" data-en="{{ 'Included' if included else 'Not included' }}">{{ 'Ada' if included else 'Tiada' }}</dd></div>
+                {% endfor %}
+            </dl>
+            <a href="https://wa.me/" class="block text-center bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-3 rounded-xl" data-ms="Pilih Pakej {{ plan.name }}" data-en="Select {{ plan.name }} Package">Pilih Pakej {{ plan.name }}</a>
+        </article>
+        {% endfor %}
     </div>
-
     <!-- GARIS PEMISAH KEMAS -->
     <div class="max-w-7xl mx-auto border-t border-zinc-800/80 my-16"></div>
 
@@ -232,7 +189,7 @@
             </div>
             <hr class="border-zinc-800">
             <div>
-                <p class="text-indigo-300 font-bold mb-1" data-ms="S: Adakah caj bulanan RM130 merangkumi kos pelayan?" data-en="Q: Does the RM130 monthly charge include server costs?">S: Adakah caj bulanan RM130 merangkumi kos pelayan?</p>
+                <p class="text-indigo-300 font-bold mb-1" data-ms="S: Adakah langganan bulanan merangkumi kos pelayan?" data-en="Q: Does the monthly subscription include server costs?">S: Adakah langganan bulanan merangkumi kos pelayan?</p>
                 <p class="text-zinc-400" data-ms="J: Ya, kos langganan bulanan merangkumi penyelenggaraan pelayan, sandaran awan harian (Daily Cloud Backup), serta kemas kini sistem." data-en="J: Yes, the monthly subscription cost covers server maintenance, daily cloud backups (Daily Cloud Backup), and system updates.">J: Ya, kos langganan bulanan merangkumi penyelenggaraan pelayan, sandaran awan harian (Daily Cloud Backup), serta kemas kini sistem.</p>
             </div>
         </div>
