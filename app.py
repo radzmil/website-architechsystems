@@ -12,7 +12,7 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from pathlib import Path
 
-from flask import Flask, render_template, request, flash, redirect, url_for, Response, jsonify
+from flask import Flask, render_template, request, flash, redirect, url_for, Response, jsonify, session, g
 import psycopg2
 
 # Local development only: hosting environment variables take precedence.
@@ -25,8 +25,18 @@ if _local_env.is_file():
         _name, _value = _line.split('=', 1)
         _name = _name.strip()
         if _name in ('ASAI_API_KEY', 'ASAI_MODEL', 'API_BASE_URL',
-                     'DEEPGRAM_API_KEY', 'CARTESIA_API_KEY', 'CARTESIA_VOICE_ID', 'DATABASE_URL'):
+                     'DEEPGRAM_API_KEY', 'CARTESIA_API_KEY', 'CARTESIA_VOICE_ID', 'DATABASE_URL',
+                     'DATABASE_PUBLIC_URL_DB_ARCHITECH_CORE'):
             os.environ.setdefault(_name, _value.strip().strip('"\''))
+
+# Local development: dedicated core DB credential lives in the untracked workspace .env.
+_workspace_env = Path(__file__).parent.parent / '.env'
+if not os.environ.get('DATABASE_PUBLIC_URL_DB_ARCHITECH_CORE') and _workspace_env.is_file():
+    for _line in _workspace_env.read_text(encoding='utf-8-sig').splitlines():
+        _name, _separator, _value = _line.strip().partition('=')
+        if _separator and _name == 'DATABASE_PUBLIC_URL_DB_ARCHITECH_CORE':
+            os.environ['DATABASE_PUBLIC_URL_DB_ARCHITECH_CORE'] = _value.strip().strip('"\'')
+            break
 
 app = Flask(__name__)
 # Require a persistent secret in production; never use a publicly known fallback.
@@ -52,7 +62,7 @@ PUBLIC_URL = 'https://www.architechsystems.my'
 SEO_PAGES = {
     '/': ('Architech Systems | Business Automation in Malaysia', 'Architech Systems builds business automation, WhatsApp solutions and software systems for Malaysian organisations.'),
     '/solutions': ('Business Automation Solutions | Architech Systems Malaysia', 'Explore software engineering, WhatsApp automation and business system solutions by Architech Systems in Malaysia.'),
-    '/pricing': ('Products and Subscriptions | Architech Systems Malaysia', 'Explore Architech Systems products, subscriptions and interactive demonstrations for businesses in Malaysia.'),
+    '/pricing': ('Products and Subscriptions | Architech Systems Malaysia', 'Compare business automation and AI Call Centre packages, setup fees and monthly pricing from Architech Systems Malaysia.'),
     '/marketplace': ('Digital Marketplace | Architech Systems Malaysia', 'Explore digital products from Architech Systems Malaysia.'),
     '/about': ('About Architech Systems | Malaysian Software Engineering', 'Learn about Architech Systems, a registered software engineering business in Malaysia.'),
     '/policy': ('Privacy Policy and Terms | Architech Systems', 'Read the privacy policy and service terms for Architech Systems.'),
@@ -65,13 +75,49 @@ def seo_context():
     title, description = SEO_PAGES.get(request.path, ('Architech Systems Demo', 'Explore a simulated Architech Systems product demonstration.'))
     return dict(seo_title=title, seo_description=description,
                 seo_canonical=PUBLIC_URL + request.path,
+                seo_image=PUBLIC_URL + url_for('static', filename='logo.png'),
+                seo_organization={'@context': 'https://schema.org', '@type': 'Organization',
+                                  'name': 'Architech Systems', 'url': PUBLIC_URL,
+                                  'logo': PUBLIC_URL + url_for('static', filename='logo.png'),
+                                  'email': SUPPORT_EMAIL},
                 seo_noindex=request.path not in SEO_PAGES,
-                analytics_enabled=os.environ.get('VERCEL_WEB_ANALYTICS') == 'true')
+                analytics_enabled=os.environ.get('VERCEL_WEB_ANALYTICS') == 'true',
+                visitor_count=getattr(g, 'visitor_count', None))
+
+
+@app.before_request
+def count_public_visitor():
+    """Count one browser session on public HTML pages; never count API or crawlers."""
+    if (request.method != 'GET' or request.path not in SEO_PAGES or
+            any(token in request.headers.get('User-Agent', '').lower()
+                for token in ('bot', 'spider', 'crawler'))):
+        return
+    database_url = os.environ.get('DATABASE_PUBLIC_URL_DB_ARCHITECH_CORE')
+    if not database_url:
+        return
+    try:
+        with psycopg2.connect(database_url, connect_timeout=3) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute('''CREATE TABLE IF NOT EXISTS website_visitor_counter (
+                    id INTEGER PRIMARY KEY CHECK (id = 1), total BIGINT NOT NULL)''')
+                cursor.execute('''INSERT INTO website_visitor_counter (id, total)
+                    VALUES (1, 797) ON CONFLICT (id) DO NOTHING''')
+                if not session.get('website_visitor_counted'):
+                    cursor.execute('''UPDATE website_visitor_counter SET total = total + 1
+                        WHERE id = 1 RETURNING total''')
+                    g.visitor_count = cursor.fetchone()[0]
+                else:
+                    cursor.execute('SELECT total FROM website_visitor_counter WHERE id = 1')
+                    g.visitor_count = cursor.fetchone()[0]
+        if not session.get('website_visitor_counted'):
+            session['website_visitor_counted'] = True
+    except psycopg2.Error:
+        app.logger.exception('Visitor counter unavailable')
 
 
 @app.route('/robots.txt')
 def robots():
-    return Response('User-agent: *\nAllow: /\nDisallow: /demo-dashboard\nDisallow: /demo-gerak-gempur\nSitemap: ' + PUBLIC_URL + '/sitemap.xml\n', mimetype='text/plain')
+    return Response('User-agent: *\nAllow: /\nSitemap: ' + PUBLIC_URL + '/sitemap.xml\n', mimetype='text/plain')
 
 
 @app.route('/sitemap.xml')
@@ -158,6 +204,14 @@ def marketplace():
                     products = [dict(id=row[0], name=row[1], description=row[2],
                                      price=f'{row[3] // 100}.{row[3] % 100:02d}', image_url=row[4])
                                 for row in cursor.fetchall()]
+                    cursor.execute("SELECT to_regclass('public.marketplace_product_images')")
+                    if cursor.fetchone()[0]:
+                        cursor.execute('SELECT product_id FROM marketplace_product_images WHERE product_id = ANY(%s)',
+                                       ([item['id'] for item in products],))
+                        uploaded_ids = {row[0] for row in cursor.fetchall()}
+                        for item in products:
+                            if item['id'] in uploaded_ids:
+                                item['image_url'] = url_for('marketplace_product_image', product_id=item['id'])
         except psycopg2.Error:
             app.logger.exception('Marketplace catalog unavailable')
             catalog_unavailable = True
@@ -165,6 +219,28 @@ def marketplace():
                                         catalog_unavailable=catalog_unavailable))
     response.headers['Cache-Control'] = 'no-store'
     return response
+
+
+@app.get('/marketplace/images/<int:product_id>')
+def marketplace_product_image(product_id):
+    database_url = os.environ.get('DATABASE_URL')
+    if not database_url:
+        return '', 404
+    try:
+        with psycopg2.connect(database_url, connect_timeout=5) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute('''SELECT i.content, i.mime_type FROM marketplace_product_images i
+                    JOIN marketplace_products p ON p.id=i.product_id
+                    WHERE p.id=%s AND p.active=TRUE''', (product_id,))
+                image = cursor.fetchone()
+        if image and image[1] in ('image/png', 'image/jpeg', 'image/webp'):
+            response = Response(bytes(image[0]), mimetype=image[1])
+            response.headers['Cache-Control'] = 'public, max-age=300'
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            return response
+    except psycopg2.Error:
+        app.logger.exception('Marketplace image unavailable')
+    return '', 404
 
 @app.route('/demo-dashboard')
 def demo_dashboard():
