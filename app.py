@@ -43,6 +43,12 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(32)
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 
+# Gateway AI prabayar (projek Railway berasingan). Boleh ditukar ke subdomain
+# sendiri melalui pemboleh ubah persekitaran tanpa mengubah template.
+AI_GATEWAY_URL = os.environ.get(
+    'AI_GATEWAY_URL',
+    'https://architech-ai-gateway-production.up.railway.app').rstrip('/')
+
 
 @app.before_request
 def check_post_origin():
@@ -82,7 +88,8 @@ def seo_context():
                                   'email': SUPPORT_EMAIL},
                 seo_noindex=request.path not in SEO_PAGES,
                 analytics_enabled=os.environ.get('VERCEL_WEB_ANALYTICS') == 'true',
-                visitor_count=getattr(g, 'visitor_count', None))
+                visitor_count=getattr(g, 'visitor_count', None),
+                ai_gateway_url=AI_GATEWAY_URL)
 
 
 @app.before_request

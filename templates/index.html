@@ -231,6 +231,64 @@
     </div>
 </section>
 
+<!-- SEKSYEN ARCHITECH AI (API AI PRABAYAR) -->
+<section id="architech-ai" class="py-20 px-6 border-b border-zinc-800/80 bg-gradient-to-br from-emerald-950/20 via-[#030305] to-teal-950/20">
+    <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="inline-flex items-center gap-2 border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 rounded-full mb-5">
+                    <i class="fa-solid fa-bolt text-emerald-400 text-xs"></i>
+                    <span class="text-emerald-400 font-mono text-[10px] tracking-widest font-bold" data-ms="BARU" data-en="NEW">NEW</span>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4 tracking-tight" data-ms="Architech AI — API AI Prabayar" data-en="Architech AI — Prepaid AI API">Architech AI — Prepaid AI API</h2>
+                <p class="text-zinc-400 mb-6 leading-relaxed" data-ms="Satu kunci API. Semua model AI terkemuka. Bayar dengan FPX atau DuitNow QR, mula dari RM5 sahaja. Serasi dengan SDK OpenAI, Claude Code, dan mana-mana aplikasi yang menyokong endpoint OpenAI-compatible." data-en="One API key. Every leading AI model. Pay with FPX or DuitNow QR, starting from RM5. Works with the OpenAI SDK, Claude Code, and any OpenAI-compatible app.">One API key. Every leading AI model. Pay with FPX or DuitNow QR, starting from RM5. Works with the OpenAI SDK, Claude Code, and any OpenAI-compatible app.</p>
+                <ul class="space-y-2 mb-8 text-sm text-zinc-400">
+                    <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-400 mt-1 text-xs"></i><span data-ms="Prabayar sepenuhnya — tiada langganan, tiada bil kejutan" data-en="Fully prepaid — no subscription, no surprise bills">Fully prepaid — no subscription, no surprise bills</span></li>
+                    <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-400 mt-1 text-xs"></i><span data-ms="Log telus — tengok model, token dan kredit setiap permintaan" data-en="Transparent logs — see model, tokens and credits for every request">Transparent logs — see model, tokens and credits for every request</span></li>
+                    <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-400 mt-1 text-xs"></i><span data-ms="Permintaan gagal tidak dicaj" data-en="Failed requests are never charged">Failed requests are never charged</span></li>
+                    <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-400 mt-1 text-xs"></i><span data-ms="DuitNow QR dapat bonus 10% kredit tambahan" data-en="DuitNow QR earns 10% bonus credits">DuitNow QR earns 10% bonus credits</span></li>
+                </ul>
+                <div class="flex flex-wrap gap-3">
+                    <a href="{{ ai_gateway_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-black font-bold px-7 py-3.5 rounded-lg hover:from-emerald-400 hover:to-teal-400 transition-all text-sm">
+                        <i class="fa-solid fa-rocket text-xs"></i>
+                        <span data-ms="Mula dengan RM5" data-en="Start with RM5">Start with RM5</span>
+                    </a>
+                    <a href="{{ ai_gateway_url }}/models" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border border-zinc-700 bg-zinc-800/50 text-zinc-200 font-semibold px-7 py-3.5 rounded-lg hover:bg-zinc-800 transition-all text-sm">
+                        <span data-ms="Lihat model" data-en="View models">View models</span>
+                    </a>
+                </div>
+            </div>
+            <div class="glass-panel rounded-2xl border border-zinc-800 p-6 overflow-hidden">
+                <div class="flex items-center gap-2 mb-4 pb-3 border-b border-zinc-800">
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-500/70"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/70"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/70"></span>
+                    <span class="ml-2 text-zinc-500 font-mono text-[10px]">quickstart.py</span>
+                </div>
+<pre class="text-[11px] leading-relaxed font-mono text-zinc-300 overflow-x-auto"><code>from openai import OpenAI
+
+client = OpenAI(
+    api_key=<span class="text-emerald-400">"sk-arch-..."</span>,
+    base_url=<span class="text-emerald-400">"{{ ai_gateway_url }}/v1"</span>
+)
+
+response = client.chat.completions.create(
+    model=<span class="text-emerald-400">"arch/claude-haiku-4.5"</span>,
+    messages=[{
+        <span class="text-sky-400">"role"</span>: <span class="text-emerald-400">"user"</span>,
+        <span class="text-sky-400">"content"</span>: <span class="text-emerald-400">"Hello"</span>
+    }]
+)
+print(response.choices[<span class="text-amber-400">0</span>].message.content)</code></pre>
+                <div class="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono">
+                    <span class="text-zinc-500">OpenAI-compatible</span>
+                    <span class="text-emerald-400">RM5 · 80,000,000 credits</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- SEKSYEN JEMPUTAN KORPORAT (CTA) -->
 <section class="py-20 px-6 text-center">
     <div class="max-w-4xl mx-auto glass-panel p-12 rounded-3xl border border-indigo-500/30 relative overflow-hidden">
