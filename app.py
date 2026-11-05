@@ -43,11 +43,11 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(32)
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 
-# Gateway AI prabayar (projek Railway berasingan). Boleh ditukar ke subdomain
-# sendiri melalui pemboleh ubah persekitaran tanpa mengubah template.
+# Gateway AI prabayar (projek Railway berasingan). Boleh ditukar melalui
+# pemboleh ubah persekitaran AI_GATEWAY_URL tanpa mengubah template.
 AI_GATEWAY_URL = os.environ.get(
     'AI_GATEWAY_URL',
-    'https://architech-ai-gateway-production.up.railway.app').rstrip('/')
+    'https://api.architechsystems.my').rstrip('/')
 
 
 @app.before_request
