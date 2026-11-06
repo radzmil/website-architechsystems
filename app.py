@@ -47,7 +47,7 @@ app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 # pemboleh ubah persekitaran AI_GATEWAY_URL tanpa mengubah template.
 AI_GATEWAY_URL = os.environ.get(
     'AI_GATEWAY_URL',
-    'https://api.architechsystems.my').rstrip('/')
+    'https://serverai.architechsystems.my').rstrip('/')
 
 
 @app.before_request
