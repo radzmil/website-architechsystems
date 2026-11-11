@@ -43,11 +43,81 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(32)
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 
+def _clean_url(value, default=''):
+    """Bersihkan URL daripada aksara yang sering tersalah masuk.
+
+    Apabila URL ditampal ke dashboard Vercel, beberapa masalah biasa berlaku:
+
+    - BOM UTF-8 (`\ufeff`) di hadapan — sangat kerap apabila nilai disalin
+      daripada Notepad atau Excel. BOM muncul sebagai `%EF%BB%BF` dalam URL
+      dan merosakkan pautan sepenuhnya.
+    - Ruang atau baris baharu di hujung.
+    - Tanda petik (`"` atau `'`) daripada salinan .env.
+    - Bilangan garis miring berlebihan di hujung (`//`).
+
+    Args:
+        value: Nilai mentah daripada persekitaran.
+        default: Nilai lalai jika kosong selepas pembersihan.
+
+    Returns:
+        URL bersih tanpa garis miring di hujung, atau `default`.
+    """
+    if not value:
+        return default
+    # Buang BOM, ruang tak kelihatan, dan petik pembalut.
+    cleaned = str(value).replace('\ufeff', '').strip().strip('"').strip("'").strip()
+    if not cleaned:
+        return default
+    # Jika nilai mengandungi lebih daripada satu 'https://' (contoh URL salah
+    # terlekat di hadapan nilai betul), ambil yang TERAKHIR — URL sebenar
+    # biasanya berada di hujung selepas tampalan berulang.
+    for scheme in ('https://', 'http://'):
+        if cleaned.count(scheme) > 1:
+            cleaned = scheme + cleaned.rsplit(scheme, 1)[1]
+            break
+    # Buang sisa teks sebelum skema (contoh '/\ufeff' atau domain lama).
+    for scheme in ('https://', 'http://'):
+        index = cleaned.find(scheme)
+        if index > 0:
+            cleaned = cleaned[index:]
+            break
+    return cleaned.rstrip('/')
+
+
 # Gateway AI prabayar (projek Railway berasingan). Boleh ditukar melalui
 # pemboleh ubah persekitaran AI_GATEWAY_URL tanpa mengubah template.
-AI_GATEWAY_URL = os.environ.get(
-    'AI_GATEWAY_URL',
-    'https://serverai.architechsystems.my').rstrip('/')
+#
+# DIBERSIHKAN melalui _clean_url: nilai dalam dashboard Vercel kerap mengandungi
+# BOM atau ruang yang tidak kelihatan. Tanpa pembersihan, pautan menjadi
+# `https://www.architechsystems.my/%EF%BB%BFhttps:/serverai...` — rosak.
+AI_GATEWAY_URL = _clean_url(
+    os.environ.get('AI_GATEWAY_URL'),
+    'https://serverai.architechsystems.my')
+
+# ------------------------------------------------------------------ ARRESTRUCT
+# Produk desktop. Laman jualan di /arrestruct; API lesen di Railway.
+#
+# ARRESTRUCT_DOWNLOAD_URL menunjuk ke fail .exe (GitHub Releases disyorkan).
+# Jangan simpan .exe 36 MB dalam repo Vercel — had deployment 50 MB.
+ARRESTRUCT_DOWNLOAD_URL = os.environ.get('ARRESTRUCT_DOWNLOAD_URL', '').strip()
+
+# Nombor WhatsApp untuk pesanan lesen, tanpa '+' dan tanpa sengkang.
+ARRESTRUCT_WHATSAPP = os.environ.get(
+    'ARRESTRUCT_WHATSAPP', '60183172114').strip()
+
+# Versi yang dipaparkan pada halaman muat turun. Kemas kini apabila .exe baharu.
+ARRESTRUCT_VERSION = os.environ.get('ARRESTRUCT_VERSION', '1.0.0').strip()
+
+# Saiz fail untuk paparan (bukan dikira automatik — elak muat turun semasa render).
+ARRESTRUCT_SIZE_MB = os.environ.get('ARRESTRUCT_SIZE_MB', '36').strip()
+
+# Harga pakej (RM). Kosong = papar "Hubungi". Ditukar melalui env atau template.
+ARRESTRUCT_PRICES = {
+    'trial': os.environ.get('ARRESTRUCT_PRICE_TRIAL', '0').strip(),
+    'personal': os.environ.get('ARRESTRUCT_PRICE_PERSONAL', '').strip(),
+    'business': os.environ.get('ARRESTRUCT_PRICE_BUSINESS', '').strip(),
+}
+
 
 
 @app.before_request
@@ -62,6 +132,24 @@ def check_post_origin():
                 supplied.scheme, supplied.netloc) != (request.scheme, request.host):
             return jsonify(error='Asal permintaan tidak dibenarkan.'), 403
     return None
+
+
+@app.before_request
+def arrestruct_subdomain_landing():
+    """Pada subdomain Arrestruct, '/' memaparkan halaman produk terus.
+
+    Subdomain `arrestruct.architechsystems.my` dipetakan ke projek Vercel yang
+    sama. Tanpa ini, pengunjung nampak halaman utama syarikat dan perlu klik
+    pautan Arrestruct — mengelirukan untuk kempen pemasaran produk tunggal.
+
+    Hanya '/' dialihkan; laluan lain (contoh '/contact') kekal pada website
+    utama supaya navigasi tidak patah.
+    """
+    host = (request.host or '').split(':')[0].strip().lower()
+    if host == 'arrestruct.architechsystems.my' and request.path == '/':
+        return redirect('/arrestruct')
+    return None
+
 
 SUPPORT_EMAIL = 'support@architechsystems.my'
 PUBLIC_URL = 'https://www.architechsystems.my'
@@ -226,6 +314,143 @@ def marketplace():
                                         catalog_unavailable=catalog_unavailable))
     response.headers['Cache-Control'] = 'no-store'
     return response
+
+
+@app.get('/arrestruct')
+def arrestruct():
+    """Laman jualan Arrestruct — ciri, harga, muat turun, langganan.
+
+    Halaman ini juga boleh dicapai melalui subdomain
+    `arrestruct.architechsystems.my` yang dipetakan ke projek Vercel yang sama.
+    """
+    packages = [
+        {
+            'key': 'trial',
+            'name': 'Trial',
+            'name_en': 'Trial',
+            'duration': '14 hari',
+            'duration_en': '14 days',
+            'pcs': 1,
+            'sources': 1,
+            'price': ARRESTRUCT_PRICES['trial'] or '0',
+            'free': True,
+            'features': [
+                'Imbas & kelaskan fail automatik',
+                'Kesan fail duplikat',
+                'Mod dry-run (tiada perubahan)',
+            ],
+            'features_en': [
+                'Automatic scan & file classification',
+                'Duplicate detection',
+                'Dry-run mode (no changes)',
+            ],
+        },
+        {
+            'key': 'personal',
+            'name': 'Personal',
+            'name_en': 'Personal',
+            'duration': '1 tahun',
+            'duration_en': '1 year',
+            'pcs': 1,
+            'sources': 1,
+            'price': ARRESTRUCT_PRICES['personal'],
+            'free': False,
+            'features': [
+                'Semua ciri Trial',
+                'Baiki struktur folder',
+                'Quarantine untuk duplikat',
+                'Sokongan WhatsApp',
+            ],
+            'features_en': [
+                'Everything in Trial',
+                'Folder structure repair',
+                'Quarantine for duplicates',
+                'WhatsApp support',
+            ],
+        },
+        {
+            'key': 'business',
+            'name': 'Business',
+            'name_en': 'Business',
+            'duration': '1 tahun',
+            'duration_en': '1 year',
+            'pcs': 3,
+            'sources': 4,
+            'price': ARRESTRUCT_PRICES['business'],
+            'free': False,
+            'popular': True,
+            'features': [
+                'Semua ciri Personal',
+                '3 komputer',
+                '4 pemacu serentak',
+                'Sesuai kedai repair',
+                'Sokongan keutamaan',
+            ],
+            'features_en': [
+                'Everything in Personal',
+                '3 computers',
+                '4 drives at once',
+                'Ideal for repair shops',
+                'Priority support',
+            ],
+        },
+    ]
+    response = Response(render_template(
+        'arrestruct.html',
+        packages=packages,
+        download_url=ARRESTRUCT_DOWNLOAD_URL,
+        whatsapp=ARRESTRUCT_WHATSAPP,
+        version=ARRESTRUCT_VERSION,
+        size_mb=ARRESTRUCT_SIZE_MB,
+    ))
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
+
+@app.post('/arrestruct/subscribe')
+def arrestruct_subscribe():
+    """Terima permintaan langganan dan hantar mesej WhatsApp sedia tulis.
+
+    Tiada gerbang pembayaran: permintaan direkodkan dan pengguna diarahkan ke
+    WhatsApp dengan butiran pesanan. Admin menjana kunci melalui Admin-Panel
+    kemudian menghantar kunci kepada pelanggan.
+    """
+    name = request.form.get('name', '').strip()[:100]
+    email = request.form.get('email', '').strip()[:160]
+    phone = request.form.get('phone', '').strip()[:40]
+    package = request.form.get('package', 'personal').strip()
+
+    allowed = {'trial', 'personal', 'business'}
+    if package not in allowed:
+        package = 'personal'
+
+    errors = []
+    if len(name) < 2:
+        errors.append('Nama diperlukan.' if session.get('lang') != 'en' else 'Name is required.')
+    # Semakan e-mel ringkas: cukup untuk menolak input sampah, bukan RFC penuh.
+    if email and ('@' not in email or email.startswith('@') or email.endswith('@')):
+        errors.append('E-mel tidak sah.' if session.get('lang') != 'en' else 'Invalid email.')
+    if len(phone.replace(' ', '').replace('-', '')) < 9:
+        errors.append('Nombor telefon diperlukan.' if session.get('lang') != 'en' else 'Phone number is required.')
+
+    if errors:
+        for message in errors:
+            flash(message, 'error')
+        return redirect(url_for('arrestruct') + '#harga')
+
+    # Bina mesej WhatsApp sedia hantar. Nombor pelanggan kekal dalam borang
+    # kerana wa.me hanya menyasarkan nombor peniaga.
+    label = {'trial': 'Trial (14 hari)', 'personal': 'Personal (1 tahun)',
+             'business': 'Business (1 tahun)'}[package]
+    text = (
+        f"Halo Architech Systems, saya ingin melanggan Arrestruct.{chr(10)}"
+        f"Pakej: {label}{chr(10)}"
+        f"Nama: {name}{chr(10)}"
+        f"E-mel: {email or '-'}{chr(10)}"
+        f"Telefon: {phone}"
+    )
+    target = f"https://wa.me/{ARRESTRUCT_WHATSAPP}?{urlencode({'text': text})}"
+    return redirect(target, code=303)
 
 
 @app.get('/marketplace/images/<int:product_id>')

@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="relative overflow-hidden border-b border-zinc-800">
+    <div class="absolute inset-0 bg-gradient-to-br from-indigo-950/40 via-transparent to-transparent pointer-events-none" aria-hidden="true"></div>
+    <div class="relative max-w-6xl mx-auto px-6 pt-16 pb-14 md:pt-20 md:pb-16">
+        <p class="text-indigo-400 text-xs font-mono uppercase tracking-[0.25em] mb-4">Architech Systems // Arrestruct</p>
+        <div class="grid md:grid-cols-[1.3fr_1fr] gap-10 items-center">
+            <div>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight mb-5"
+                    data-ms="Susun &amp; Baiki Pemacu USB Anda" data-en="Organize &amp; Repair Your USB Drive">
+                    Organize &amp; Repair Your USB Drive
+                </h1>
+                <p class="text-zinc-400 text-base md:text-lg leading-relaxed mb-8 max-w-xl"
+                   data-ms="Arrestruct mengimbas pemacu, mengelaskan fail mengikut jenis, menyusun ke folder yang betul, dan membaiki struktur yang rosak — tanpa mengusik fail asal anda."
+                   data-en="Arrestruct scans your drive, classifies files by type, sorts them into the right folders, and repairs broken structure — without touching your original files.">
+                    Arrestruct scans your drive, classifies files by type, sorts them into the right folders, and repairs broken structure — without touching your original files.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                    {% if download_url %}
+                    <a href="{{ download_url }}" rel="noopener" download
+                       class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 px-6 py-3 font-semibold text-white transition">
+                        <i class="fa-solid fa-download" aria-hidden="true"></i>
+                        <span data-ms="Muat Turun (Trial 14 Hari)" data-en="Download (14-Day Trial)">Download (14-Day Trial)</span>
+                    </a>
+                    {% else %}
+                    <span class="inline-flex items-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 px-6 py-3 font-semibold text-zinc-400">
+                        <i class="fa-solid fa-clock" aria-hidden="true"></i>
+                        <span data-ms="Muat turun segera" data-en="Download coming soon">Download coming soon</span>
+                    </span>
+                    {% endif %}
+                    <a href="#harga" class="inline-flex items-center gap-2 rounded-xl border border-zinc-700 hover:border-indigo-500 px-6 py-3 font-semibold text-zinc-200 transition">
+                        <span data-ms="Lihat Harga" data-en="View Pricing">View Pricing</span>
+                    </a>
+                </div>
+                <p class="text-xs text-zinc-500 mt-5 font-mono">
+                    v{{ version }} &middot; Windows 10/11 &middot; {{ size_mb }} MB
+                </p>
+            </div>
+            <div class="flex justify-center">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo Arrestruct"
+                     class="w-full max-w-[260px] h-auto object-contain drop-shadow-2xl" loading="lazy">
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ---------------------------------------------------- masalah / penyelesaian #}
+<section class="max-w-6xl mx-auto px-6 py-14 md:py-16">
+    <h2 class="text-2xl font-bold text-white mb-8" data-ms="Apa Yang Arrestruct Selesaikan" data-en="What Arrestruct Solves">What Arrestruct Solves</h2>
+    <div class="grid sm:grid-cols-2 gap-5">
+        {% set items = [
+            ('fa-folder-tree', 'Fail bertaburan tanpa struktur', 'Scattered files without structure', 'Kelaskan ikut jenis (Gambar, Dokumen, Video, Muzik, Arkib) dan susun ke folder masing-masing.', 'Classify by type (Images, Documents, Video, Music, Archives) and sort into folders.'),
+            ('fa-clone', 'Fail duplikat mengambil ruang', 'Duplicate files wasting space', 'Kesan fail serupa menggunakan hash kandungan, bukan nama fail.', 'Detect similar files using content hash, not file name.'),
+            ('fa-wrench', 'Pemacu tidak boleh dibaca', 'Drive cannot be read', 'Baiki atribut dan struktur folder dengan pilihan selamat.', 'Repair attributes and folder structure with safe options.'),
+            ('fa-magnifying-glass', 'Tidak tahu apa ada dalam pemacu', 'No idea what is on the drive', 'Pratonton penuh sebelum sebarang perubahan — mod dry-run.', 'Full preview before any change — dry-run mode.')
+        ] %}
+        {% for icon, title_ms, title_en, body_ms, body_en in items %}
+        <article class="glass-panel rounded-2xl p-6">
+            <div class="flex items-start gap-4">
+                <span class="shrink-0 w-11 h-11 rounded-xl bg-indigo-500/15 text-indigo-300 grid place-items-center" aria-hidden="true">
+                    <i class="fa-solid {{ icon }}"></i>
+                </span>
+                <div class="min-w-0">
+                    <h3 class="font-bold text-white mb-2" data-ms="{{ title_ms }}" data-en="{{ title_en }}">{{ title_en }}</h3>
+                    <p class="text-sm text-zinc-400 leading-relaxed" data-ms="{{ body_ms }}" data-en="{{ body_en }}">{{ body_en }}</p>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
+{# --------------------------------------------------------------- keselamatan #}
+<section class="border-y border-zinc-800 bg-zinc-950/60">
+    <div class="max-w-6xl mx-auto px-6 py-14 md:py-16">
+        <h2 class="text-2xl font-bold text-white mb-3" data-ms="Direka Untuk Tidak Merosakkan Data" data-en="Designed Not to Damage Your Data">Designed Not to Damage Your Data</h2>
+        <p class="text-zinc-400 mb-8 max-w-2xl" data-ms="Setiap operasi melalui semakan berlapis sebelum menyentuh fail anda." data-en="Every operation goes through layered checks before touching your files.">Every operation goes through layered checks before touching your files.</p>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {% set safety = [
+                ('Fail asal tidak diusik', 'Original files untouched', 'Hanya salinan dibuat; tiada fail dipadam atau dipindah dari sumber.', 'Only copies are made; no source file is deleted or moved.'),
+                ('Duplikat ke Quarantine', 'Duplicates to Quarantine', 'Fail berulang dipindah ke folder _Quarantine, bukan dipadam.', 'Repeated files are moved to _Quarantine, not deleted.'),
+                ('Dry-run tersedia', 'Dry-run available', 'Lihat kesan penuh sebelum sebarang perubahan dibuat.', 'Preview the full impact before any change is made.'),
+                ('Pengesahan lesen', 'Licence verification', 'Lesen disahkan dalam talian dengan tiket luar talian 7 hari.', 'Licence verified online with a 7-day offline ticket.')
+            ] %}
+            {% for t_ms, t_en, b_ms, b_en in safety %}
+            <div class="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5">
+                <p class="text-emerald-400 mb-2"><i class="fa-solid fa-circle-check" aria-hidden="true"></i></p>
+                <h3 class="font-semibold text-white text-sm mb-1.5" data-ms="{{ t_ms }}" data-en="{{ t_en }}">{{ t_en }}</h3>
+                <p class="text-xs text-zinc-400 leading-relaxed" data-ms="{{ b_ms }}" data-en="{{ b_en }}">{{ b_en }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# --------------------------------------------------------------------- harga #}
+<section id="harga" class="max-w-6xl mx-auto px-6 py-14 md:py-16">
+    <div class="mb-9">
+        <h2 class="text-2xl font-bold text-white mb-2" data-ms="Pilih Pakej Anda" data-en="Choose Your Package">Choose Your Package</h2>
+        <p class="text-zinc-400" data-ms="Mula percuma. Naik taraf bila perlu." data-en="Start free. Upgrade when you need more.">Start free. Upgrade when you need more.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+      <p role="alert" class="mb-6 rounded-xl border p-4 {{ 'border-rose-500/40 bg-rose-500/10 text-rose-200' if category == 'error' else 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200' }}">{{ message }}</p>
+      {% endfor %}
+    {% endwith %}
+
+    <div class="grid md:grid-cols-3 gap-5 items-stretch">
+        {% for pkg in packages %}
+        <article class="relative rounded-2xl border {{ 'border-indigo-500' if pkg.popular else 'border-zinc-800' }} bg-zinc-900/60 p-6 flex flex-col">
+            {% if pkg.popular %}
+            <span class="absolute -top-3 left-6 rounded-full bg-indigo-500 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white"
+                  data-ms="Paling Popular" data-en="Most Popular">Most Popular</span>
+            {% endif %}
+
+            <h3 class="text-lg font-bold text-white mb-1">{{ pkg.name }}</h3>
+            <p class="text-xs text-zinc-500 mb-5"
+               data-ms="{{ pkg.duration }} &middot; {{ pkg.pcs }} komputer &middot; {{ pkg.sources }} pemacu"
+               data-en="{{ pkg.duration_en }} &middot; {{ pkg.pcs }} computer{{ 's' if pkg.pcs > 1 else '' }} &middot; {{ pkg.sources }} drive{{ 's' if pkg.sources > 1 else '' }}">
+               {{ pkg.duration_en }} &middot; {{ pkg.pcs }} computer{{ 's' if pkg.pcs > 1 else '' }} &middot; {{ pkg.sources }} drive{{ 's' if pkg.sources > 1 else '' }}
+            </p>
+
+            <div class="mb-6">
+                {% if pkg.free %}
+                <span class="text-3xl font-extrabold text-white" data-ms="PERCUMA" data-en="FREE">FREE</span>
+                {% elif pkg.price %}
+                <span class="text-3xl font-extrabold text-white">RM{{ pkg.price }}</span>
+                <span class="text-xs text-zinc-500 block mt-1" data-ms="setahun" data-en="per year">per year</span>
+                {% else %}
+                <span class="text-xl font-bold text-zinc-300" data-ms="Harga atas permintaan" data-en="Price on request">Price on request</span>
+                {% endif %}
+            </div>
+
+            <ul class="space-y-2.5 text-sm text-zinc-300 mb-7 flex-1">
+                {% for item in pkg.features %}
+                {% set item_en = pkg.features_en[loop.index0] %}
+                <li class="flex items-start gap-2.5">
+                    <i class="fa-solid fa-check text-indigo-400 mt-0.5 text-xs" aria-hidden="true"></i>
+                    <span data-ms="{{ item }}" data-en="{{ item_en }}">{{ item_en }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <button type="button"
+                    class="subscribe-btn w-full rounded-xl px-5 py-3 font-semibold transition {{ 'bg-indigo-500 hover:bg-indigo-400 text-white' if pkg.popular else 'border border-zinc-700 hover:border-indigo-500 text-zinc-200' }}"
+                    data-package="{{ pkg.key }}">
+                <span data-ms="Langgan {{ pkg.name }}" data-en="Subscribe to {{ pkg.name_en }}">Subscribe to {{ pkg.name_en }}</span>
+            </button>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
+{# ------------------------------------------------------- borang langganan #}
+<section id="langgan" class="border-y border-zinc-800 bg-zinc-950/60">
+    <div class="max-w-3xl mx-auto px-6 py-14 md:py-16">
+        <h2 class="text-2xl font-bold text-white mb-2" data-ms="Borang Langganan" data-en="Subscription Form">Subscription Form</h2>
+        <p class="text-zinc-400 mb-8" data-ms="Isi butiran — kami akan hubungi anda melalui WhatsApp untuk pengaktifan lesen." data-en="Fill in your details — we will contact you on WhatsApp to activate your licence.">Fill in your details — we will contact you on WhatsApp to activate your licence.</p>
+
+        <form method="post" action="{{ url_for('arrestruct_subscribe') }}" class="glass-panel rounded-2xl p-6 space-y-4">
+            <div class="grid sm:grid-cols-2 gap-4">
+                <label class="block">
+                    <span class="block text-xs uppercase tracking-wider text-zinc-400 mb-2" data-ms="Nama penuh" data-en="Full name">Full name</span>
+                    <input name="name" required maxlength="100" autocomplete="name"
+                           class="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2.5 text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none">
+                </label>
+                <label class="block">
+                    <span class="block text-xs uppercase tracking-wider text-zinc-400 mb-2" data-ms="Nombor telefon (WhatsApp)" data-en="Phone number (WhatsApp)">Phone number (WhatsApp)</span>
+                    <input name="phone" required maxlength="40" autocomplete="tel" placeholder="0123456789"
+                           class="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2.5 text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none">
+                </label>
+            </div>
+            <label class="block">
+                <span class="block text-xs uppercase tracking-wider text-zinc-400 mb-2" data-ms="E-mel (pilihan)" data-en="Email (optional)">Email (optional)</span>
+                <input name="email" type="email" maxlength="160" autocomplete="email"
+                       class="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2.5 text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none">
+            </label>
+            <label class="block">
+                <span class="block text-xs uppercase tracking-wider text-zinc-400 mb-2" data-ms="Pakej" data-en="Package">Package</span>
+                <select name="package" id="package-select"
+                        class="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2.5 text-white focus:border-indigo-500 focus:outline-none">
+                    {% for pkg in packages %}
+                    <option value="{{ pkg.key }}">{{ pkg.name }} — {{ pkg.duration_en }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <button type="submit" class="w-full rounded-xl bg-indigo-500 hover:bg-indigo-400 px-6 py-3 font-semibold text-white transition">
+                <i class="fa-brands fa-whatsapp mr-2" aria-hidden="true"></i>
+                <span data-ms="Hantar melalui WhatsApp" data-en="Send via WhatsApp">Send via WhatsApp</span>
+            </button>
+            <p class="text-xs text-zinc-500 text-center" data-ms="Anda akan diarahkan ke WhatsApp dengan mesej sedia tulis." data-en="You will be redirected to WhatsApp with a pre-filled message.">You will be redirected to WhatsApp with a pre-filled message.</p>
+        </form>
+    </div>
+</section>
+
+{# ------------------------------------------------------------ muat turun #}
+<section class="max-w-4xl mx-auto px-6 py-14 md:py-16">
+    <div class="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-7">
+        <div class="flex flex-wrap items-center justify-between gap-5">
+            <div class="min-w-0">
+                <h2 class="text-xl font-bold text-white mb-1" data-ms="Muat Turun Arrestruct" data-en="Download Arrestruct">Download Arrestruct</h2>
+                <p class="text-sm text-zinc-400 font-mono">v{{ version }} &middot; {{ size_mb }} MB &middot; Windows 10/11 (64-bit)</p>
+            </div>
+            {% if download_url %}
+            <a href="{{ download_url }}" rel="noopener" download
+               class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 px-6 py-3 font-semibold text-white transition">
+                <i class="fa-solid fa-download" aria-hidden="true"></i>
+                <span data-ms="Muat Turun .exe" data-en="Download .exe">Download .exe</span>
+            </a>
+            {% else %}
+            <span class="inline-flex items-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 px-6 py-3 font-semibold text-zinc-400" data-ms="Muat turun segera" data-en="Download coming soon">Download coming soon</span>
+            {% endif %}
+        </div>
+
+        <div class="mt-6 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+            <p class="text-sm text-amber-200 font-semibold mb-1.5">
+                <i class="fa-solid fa-triangle-exclamation mr-1.5" aria-hidden="true"></i>
+                <span data-ms="Windows mungkin memaparkan amaran" data-en="Windows may show a warning">Windows may show a warning</span>
+            </p>
+            <p class="text-xs text-amber-100/80 leading-relaxed"
+               data-ms="Jika Windows SmartScreen memaparkan amaran 'Windows protected your PC', klik More info &rarr; Run anyway. Ini normal untuk perisian baharu yang belum mempunyai reputasi meluas — ia bukan amaran virus."
+               data-en="If Windows SmartScreen shows 'Windows protected your PC', click More info &rarr; Run anyway. This is normal for new software without widespread reputation — it is not a virus warning.">
+               If Windows SmartScreen shows "Windows protected your PC", click More info &rarr; Run anyway. This is normal for new software without widespread reputation — it is not a virus warning.
+            </p>
+        </div>
+
+        <div class="mt-5 grid sm:grid-cols-3 gap-3 text-xs text-zinc-400">
+            <p><i class="fa-solid fa-shield-halved text-emerald-400 mr-1.5" aria-hidden="true"></i><span data-ms="Fail asal tidak diusik" data-en="Original files untouched">Original files untouched</span></p>
+            <p><i class="fa-solid fa-clock-rotate-left text-emerald-400 mr-1.5" aria-hidden="true"></i><span data-ms="Trial 14 hari" data-en="14-day trial">14-day trial</span></p>
+            <p><i class="fa-solid fa-headset text-emerald-400 mr-1.5" aria-hidden="true"></i><span data-ms="Sokongan WhatsApp" data-en="WhatsApp support">WhatsApp support</span></p>
+        </div>
+    </div>
+</section>
+
+<script>
+  // Butang "Langgan" pada setiap kad pakej menatal ke borang dan memilih pakej.
+  document.querySelectorAll('.subscribe-btn').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var select = document.getElementById('package-select');
+      if (select) { select.value = button.dataset.package; }
+      var target = document.getElementById('langgan');
+      if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+</script>
+{% endblock %}
