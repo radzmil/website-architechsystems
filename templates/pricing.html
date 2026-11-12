@@ -18,9 +18,9 @@
         <a href="{{ url_for('demo_dashboard') }}" class="inline-flex w-64 max-w-full min-h-12 items-center justify-center rounded-xl border border-indigo-500/50 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-2 text-center text-white text-xs font-semibold leading-snug transition focus:outline-none focus:ring-2 focus:ring-indigo-300" aria-label="Try Demo: buka simulator dashboard klien LeeA" data-ms="Try Demo · Dashboard Klien ↗" data-en="Try Demo · Client Dashboard ↗">Try Demo · Dashboard Klien ↗</a>
     </div>
     {% set automation_plans = [
-        {'name':'Basic', 'promo':'50', 'price':'99', 'off':49, 'lines':'1', 'popular':false, 'quote':false, 'autopilot':false, 'broadcast':false, 'followup':false, 'vip':false, 'booking':false},
-        {'name':'Pro', 'promo':'100', 'price':'199', 'off':50, 'lines':'2', 'popular':true, 'quote':true, 'autopilot':true, 'broadcast':false, 'followup':false, 'vip':false, 'booking':false},
-        {'name':'Advance', 'promo':'199', 'price':'299', 'off':33, 'lines':'Sehingga 5', 'popular':false, 'quote':true, 'autopilot':true, 'broadcast':true, 'followup':true, 'vip':true, 'booking':true}
+        {'name':'Basic', 'price_first_month':'50', 'price_original':'99', 'off':49, 'lines':'1', 'popular':false, 'quote':false, 'autopilot':false, 'broadcast':false, 'followup':false, 'vip':false, 'booking':false},
+        {'name':'Pro', 'price_first_month':'100', 'price_original':'199', 'off':50, 'lines':'2', 'popular':true, 'quote':true, 'autopilot':true, 'broadcast':false, 'followup':false, 'vip':false, 'booking':false},
+        {'name':'Advance', 'price_first_month':'199', 'price_original':'299', 'off':33, 'lines':'Sehingga 5', 'popular':false, 'quote':true, 'autopilot':true, 'broadcast':true, 'followup':true, 'vip':true, 'booking':true}
     ] %}
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
         {% for plan in automation_plans %}
@@ -29,8 +29,9 @@
             <div class="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-mono px-3 py-1 rounded-bl-xl uppercase tracking-wider" data-ms="🔥 PALING POPULAR" data-en="🔥 MOST POPULAR">🔥 PALING POPULAR</div>
             {% endif %}
             <h3 class="text-2xl font-bold text-white mb-2">Pakej {{ plan.name }}</h3>
-            <p class="text-3xl font-extrabold text-white">RM{{ plan.promo }} <span class="text-xs font-normal text-zinc-400" data-ms="/ Bulan (Bulan Pertama)" data-en="/ Month (First Month)">/ Bulan (Bulan Pertama)</span></p>
-            <p class="text-xs text-indigo-300 mb-2"><span data-ms="Harga asal" data-en="Original price">Harga asal</span> <span class="line-through text-zinc-500" data-ms="RM{{ plan.price }}" data-en="RM{{ plan.price }}">RM{{ plan.price }}</span> <span class="inline-block ml-1 rounded bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-300" data-ms="JIMAT {{ plan.off }}%" data-en="SAVE {{ plan.off }}%">JIMAT {{ plan.off }}%</span></p>
+            <p class="text-4xl font-extrabold text-white leading-none">RM{{ plan.price_first_month }} <span class="text-xs font-normal text-zinc-400" data-ms="/ Bulan Pertama" data-en="/ First Month">/ Bulan Pertama</span></p>
+            <p class="text-xs text-indigo-300 mb-1 mt-2"><span data-ms="Harga asal" data-en="Original price">Harga asal</span> <span class="line-through text-zinc-500 text-sm">RM{{ plan.price_original }}</span> <span class="inline-block ml-1 rounded bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-300" data-ms="JIMAT {{ plan.off }}%" data-en="SAVE {{ plan.off }}%">JIMAT {{ plan.off }}%</span></p>
+            <p class="text-[10px] text-zinc-500 mb-2" data-ms="*Harga promosi untuk bulan pertama sahaja. Bulan seterusnya RM{{ plan.price_original }}." data-en="*Promotional price for the first month only. Subsequent months RM{{ plan.price_original }}.">*Harga promosi untuk bulan pertama sahaja. Bulan seterusnya RM{{ plan.price_original }}.</p>
             <p class="text-[10px] text-amber-300/90 mb-6" data-ms="Promosi Terhad: 10 Bisnes Sahaja (Menjelang 2027)" data-en="Limited Offer: 10 Businesses Only (Ahead of 2027)">Promosi Terhad: 10 Bisnes Sahaja (Menjelang 2027)</p>
             <dl class="space-y-2 text-xs text-zinc-300 mb-8 flex-1">
                 <div><dt class="text-indigo-400" data-ms="Model Bot v1" data-en="Bot Model v1">Model Bot v1</dt><dd>200mb</dd></div>
@@ -51,7 +52,7 @@
                 <div class="flex gap-2"><dt class="flex-1" data-ms="{{ label_ms }}" data-en="{{ label_en }}">{{ label_ms }}</dt><dd class="font-bold {{ 'text-emerald-400' if included else 'text-rose-400' }}" data-ms="{{ 'Ada' if included else 'Tiada' }}" data-en="{{ 'Included' if included else 'Not included' }}">{{ 'Ada' if included else 'Tiada' }}</dd></div>
                 {% endfor %}
             </dl>
-            <a href="https://wa.me/" class="block text-center bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-3 rounded-xl" data-ms="Pilih Pakej {{ plan.name }}" data-en="Select {{ plan.name }} Package">Pilih Pakej {{ plan.name }}</a>
+            <a href="https://wa.me/60183172114" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs px-5 py-3.5 rounded-xl transition shadow-lg shadow-emerald-500/25" data-ms="WhatsApp Kami untuk Free Demo" data-en="WhatsApp Us for a Free Demo"><i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i> <span data-ms="WhatsApp Kami untuk Free Demo" data-en="WhatsApp Us for a Free Demo">WhatsApp Kami untuk Free Demo</span></a>
         </article>
         {% endfor %}
     </div>
@@ -91,7 +92,7 @@
                     <li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> <span data-ms="Sistem Ganjaran E-Dompet" data-en="E-Wallet Reward System">Sistem Ganjaran E-Dompet</span></li>
                 </ul>
             </div>
-            <a href="https://wa.me/?text=Saya%20nak%20beli%20Pakej%20Basic%20Cikgu%20Leea%20RM39.90" class="w-full block text-center bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs py-3 rounded-xl transition uppercase tracking-wider" data-ms="Beli Pakej Basic" data-en="Buy Basic">
+            <a href="https://wa.me/60183172114?text=Saya%20nak%20beli%20Pakej%20Basic%20Cikgu%20Leea%20RM39.90" target="_blank" rel="noopener noreferrer" class="w-full block text-center bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs py-3 rounded-xl transition uppercase tracking-wider" data-ms="Beli Pakej Basic" data-en="Buy Basic">
                 Beli Pakej Basic
             </a>
         </div>
@@ -111,7 +112,7 @@
                     <li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> <span data-ms="Modul Kawalan Disiplin Ibu Bapa" data-en="Parental Discipline Control Module">Modul Kawalan Disiplin Ibu Bapa</span></li>
                 </ul>
             </div>
-            <a href="https://wa.me/?text=Saya%20nak%20beli%20Pakej%20Pro%20Cikgu%20Leea%20RM69.90" class="w-full block text-center bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-3 rounded-xl transition shadow-lg shadow-emerald-500/25 uppercase tracking-wider" data-ms="Beli Pakej Pro" data-en="Buy Pro">
+            <a href="https://wa.me/60183172114?text=Saya%20nak%20beli%20Pakej%20Pro%20Cikgu%20Leea%20RM69.90" target="_blank" rel="noopener noreferrer" class="w-full block text-center bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-3 rounded-xl transition shadow-lg shadow-emerald-500/25 uppercase tracking-wider" data-ms="Beli Pakej Pro" data-en="Buy Pro">
                 Beli Pakej Pro
             </a>
         </div>
@@ -130,7 +131,7 @@
                     <li class="flex items-center"><i class="fa-solid fa-check text-sky-400 mr-2"></i> <span data-ms="Modul Disiplin & Analisis Penuh" data-en="Full Discipline & Analysis Module">Modul Disiplin & Analisis Penuh</span></li>
                 </ul>
             </div>
-            <a href="https://wa.me/?text=Saya%20nak%20beli%20Pakej%20Full%20Cikgu%20Leea%20RM99.90" class="w-full block text-center bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs py-3 rounded-xl transition uppercase tracking-wider" data-ms="Beli Pakej Full" data-en="Buy Full Package">
+            <a href="https://wa.me/60183172114?text=Saya%20nak%20beli%20Pakej%20Full%20Cikgu%20Leea%20RM99.90" target="_blank" rel="noopener noreferrer" class="w-full block text-center bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs py-3 rounded-xl transition uppercase tracking-wider" data-ms="Beli Pakej Full" data-en="Buy Full Package">
                 Beli Pakej Full
             </a>
         </div>
@@ -149,7 +150,7 @@
                     <li class="flex items-center"><i class="fa-solid fa-check text-purple-400 mr-2"></i> <span data-ms="Tambah Peranti (Berbayar)" data-en="Extra Devices (Paid Add-on)">Tambah Peranti (Berbayar)</span></li>
                 </ul>
             </div>
-            <a href="https://wa.me/?text=Saya%20nak%20beli%20Pakej%20VIP%20Cikgu%20Leea%20RM129.90" class="w-full block text-center bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs py-3 rounded-xl transition uppercase tracking-wider" data-ms="Beli Pakej VIP" data-en="Buy VIP">
+            <a href="https://wa.me/60183172114?text=Saya%20nak%20beli%20Pakej%20VIP%20Cikgu%20Leea%20RM129.90" target="_blank" rel="noopener noreferrer" class="w-full block text-center bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs py-3 rounded-xl transition uppercase tracking-wider" data-ms="Beli Pakej VIP" data-en="Buy VIP">
                 Beli Pakej VIP
             </a>
         </div>

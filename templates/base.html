@@ -76,31 +76,6 @@
             animation: blink 1s step-end infinite;
         }
         @keyframes blink { 50% { opacity: 0; } }
-
-        .scroller {
-            overflow: hidden;
-            -webkit-mask: linear-gradient(90deg, transparent, white 10%, white 90%, transparent);
-            mask: linear-gradient(90deg, transparent, white 10%, white 90%, transparent);
-        }
-        .scroller__inner {
-            padding-block: 1rem;
-            display: flex;
-            flex-wrap: nowrap;
-            gap: 1.5rem;
-            width: max-content;
-            animation: scroll 60s linear infinite;
-        }
-        .scroller__inner:hover {
-            animation-play-state: paused;
-        }
-        .scroller__inner[data-direction="right"] {
-            animation-direction: reverse;
-        }
-        @keyframes scroll {
-            to {
-                transform: translate(calc(-50% - 0.75rem));
-            }
-        }
     </style>
 </head>
 <body class="text-zinc-300 antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
@@ -130,10 +105,7 @@
             <div class="hidden lg:flex items-center space-x-8 text-sm font-medium text-zinc-400">
                 <a href="/" class="hover:text-white transition" data-ms="Utama" data-en="Home">Home</a>
                 <a href="/solutions" class="hover:text-white transition" data-ms="Penyelesaian" data-en="Solutions">Solutions</a>
-                <a href="/about" class="hover:text-white transition" data-ms="Organisasi" data-en="Organization">Organization</a>
                 <a href="/pricing" class="hover:text-white transition" data-ms="Produk & Langganan" data-en="Products & Subs">Products & Subs</a>
-                <a href="/marketplace" class="hover:text-white transition" data-ms="Marketplace" data-en="Marketplace">Marketplace</a>
-                <a href="/policy" class="hover:text-white transition" data-ms="Dasar" data-en="Policy">Policy</a>
                 <a href="/contact" class="hover:text-white transition" data-ms="Hubungi" data-en="Contact">Contact</a>
             </div>
             <div class="flex items-center space-x-2 sm:space-x-4">
@@ -163,10 +135,7 @@
             <div class="max-w-7xl mx-auto px-4 py-3 grid gap-1">
                 <a href="/" class="mobile-nav-link rounded-md px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white transition" data-ms="Utama" data-en="Home">Home</a>
                 <a href="/solutions" class="mobile-nav-link rounded-md px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white transition" data-ms="Penyelesaian" data-en="Solutions">Solutions</a>
-                <a href="/about" class="mobile-nav-link rounded-md px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white transition" data-ms="Organisasi" data-en="Organization">Organization</a>
                 <a href="/pricing" class="mobile-nav-link rounded-md px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white transition" data-ms="Produk & Langganan" data-en="Products & Subs">Products & Subs</a>
-            <a href="/marketplace" class="mobile-nav-link rounded-md px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white transition" data-ms="Marketplace" data-en="Marketplace">Marketplace</a>
-                <a href="/policy" class="mobile-nav-link rounded-md px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white transition" data-ms="Dasar" data-en="Policy">Policy</a>
                 <a href="/contact" class="mobile-nav-link rounded-md px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white transition" data-ms="Hubungi" data-en="Contact">Contact</a>
             <a href="https://wa.me/60183172114" target="_blank" rel="noopener noreferrer" class="mobile-nav-link rounded-md px-4 py-3 text-sm font-medium text-emerald-400 hover:bg-zinc-800 hover:text-white transition" data-ms="Sembang Langsung (WhatsApp)" data-en="Live Chat (WhatsApp)">Live Chat (WhatsApp)</a>
             </div>
