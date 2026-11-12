@@ -200,13 +200,13 @@
         <div class="flex flex-wrap items-center justify-between gap-5">
             <div class="min-w-0">
                 <h2 class="text-xl font-bold text-white mb-1" data-ms="Muat Turun Arrestruct" data-en="Download Arrestruct">Download Arrestruct</h2>
-                <p class="text-sm text-zinc-400 font-mono">v{{ version }} &middot; {{ size_mb }} MB &middot; Windows 10/11 (64-bit)</p>
+                <p class="text-sm text-zinc-400 font-mono">v{{ version }} &middot; {{ size_mb }} MB ZIP &middot; Windows 10/11 (64-bit)</p>
             </div>
             {% if download_url %}
             <a href="{{ download_url }}" rel="noopener" download
                class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 px-6 py-3 font-semibold text-white transition">
-                <i class="fa-solid fa-download" aria-hidden="true"></i>
-                <span data-ms="Muat Turun .exe" data-en="Download .exe">Download .exe</span>
+                <i class="fa-solid fa-file-zipper" aria-hidden="true"></i>
+                <span data-ms="Muat Turun ZIP" data-en="Download ZIP">Download ZIP</span>
             </a>
             {% else %}
             <span class="inline-flex items-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 px-6 py-3 font-semibold text-zinc-400" data-ms="Muat turun segera" data-en="Download coming soon">Download coming soon</span>
@@ -222,6 +222,18 @@
                data-ms="Jika Windows SmartScreen memaparkan amaran 'Windows protected your PC', klik More info &rarr; Run anyway. Ini normal untuk perisian baharu yang belum mempunyai reputasi meluas — ia bukan amaran virus."
                data-en="If Windows SmartScreen shows 'Windows protected your PC', click More info &rarr; Run anyway. This is normal for new software without widespread reputation — it is not a virus warning.">
                If Windows SmartScreen shows "Windows protected your PC", click More info &rarr; Run anyway. This is normal for new software without widespread reputation — it is not a virus warning.
+            </p>
+        </div>
+
+        <div class="mt-5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4">
+            <p class="text-sm text-indigo-200 font-semibold mb-1.5">
+                <i class="fa-solid fa-file-zipper mr-1.5" aria-hidden="true"></i>
+                <span data-ms="Muat turun fail ZIP, kemudian ekstrak" data-en="Download the ZIP, then extract">Download the ZIP, then extract</span>
+            </p>
+            <p class="text-xs text-indigo-100/80 leading-relaxed"
+               data-ms="Fail yang dimuat turun ialah ZIP. Klik kanan &rarr; Extract All, kemudian jalankan Arrestruct.exe dari folder tersebut. Jangan jalankan terus dari dalam ZIP — Windows akan gagal menyimpan tetapan lesen."
+               data-en="The download is a ZIP file. Right-click &rarr; Extract All, then run Arrestruct.exe from that folder. Do not run it directly from inside the ZIP — Windows cannot save the licence settings.">
+               The download is a ZIP file. Right-click &rarr; Extract All, then run Arrestruct.exe from that folder. Do not run it directly from inside the ZIP — Windows cannot save the licence settings.
             </p>
         </div>
 
