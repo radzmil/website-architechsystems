@@ -18,9 +18,9 @@
         <a href="{{ url_for('demo_dashboard') }}" class="inline-flex w-64 max-w-full min-h-12 items-center justify-center rounded-xl border border-indigo-500/50 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-2 text-center text-white text-xs font-semibold leading-snug transition focus:outline-none focus:ring-2 focus:ring-indigo-300" aria-label="Try Demo: buka simulator dashboard klien LeeA" data-ms="Try Demo · Dashboard Klien ↗" data-en="Try Demo · Client Dashboard ↗">Try Demo · Dashboard Klien ↗</a>
     </div>
     {% set automation_plans = [
-        {'name':'Basic', 'price_first_month':'50', 'price_original':'99', 'off':49, 'lines':'1', 'popular':false, 'quote':false, 'autopilot':false, 'broadcast':false, 'followup':false, 'vip':false, 'booking':false},
-        {'name':'Pro', 'price_first_month':'100', 'price_original':'199', 'off':50, 'lines':'2', 'popular':true, 'quote':true, 'autopilot':true, 'broadcast':false, 'followup':false, 'vip':false, 'booking':false},
-        {'name':'Advance', 'price_first_month':'199', 'price_original':'299', 'off':33, 'lines':'Sehingga 5', 'popular':false, 'quote':true, 'autopilot':true, 'broadcast':true, 'followup':true, 'vip':true, 'booking':true}
+        {'name':'Basic', 'setup_fee':'50', 'price_first_month':'50', 'price_original':'99', 'lines':'1', 'popular':false, 'quote':false, 'autopilot':false, 'broadcast':false, 'followup':false, 'vip':false, 'booking':false},
+        {'name':'Pro', 'setup_fee':'100', 'price_first_month':'100', 'price_original':'199', 'lines':'2', 'popular':true, 'quote':true, 'autopilot':true, 'broadcast':false, 'followup':false, 'vip':false, 'booking':false},
+        {'name':'Advance', 'setup_fee':'199', 'price_first_month':'199', 'price_original':'299', 'lines':'Sehingga 5', 'popular':false, 'quote':true, 'autopilot':true, 'broadcast':true, 'followup':true, 'vip':true, 'booking':true}
     ] %}
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
         {% for plan in automation_plans %}
@@ -28,11 +28,28 @@
             {% if plan.popular %}
             <div class="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-mono px-3 py-1 rounded-bl-xl uppercase tracking-wider" data-ms="🔥 PALING POPULAR" data-en="🔥 MOST POPULAR">🔥 PALING POPULAR</div>
             {% endif %}
-            <h3 class="text-2xl font-bold text-white mb-2">Pakej {{ plan.name }}</h3>
-            <p class="text-4xl font-extrabold text-white leading-none">RM{{ plan.price_first_month }} <span class="text-xs font-normal text-zinc-400" data-ms="/ Bulan Pertama" data-en="/ First Month">/ Bulan Pertama</span></p>
-            <p class="text-xs text-indigo-300 mb-1 mt-2"><span data-ms="Harga asal" data-en="Original price">Harga asal</span> <span class="line-through text-zinc-500 text-sm">RM{{ plan.price_original }}</span> <span class="inline-block ml-1 rounded bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-300" data-ms="JIMAT {{ plan.off }}%" data-en="SAVE {{ plan.off }}%">JIMAT {{ plan.off }}%</span></p>
-            <p class="text-[10px] text-zinc-500 mb-2" data-ms="*Harga promosi untuk bulan pertama sahaja. Bulan seterusnya RM{{ plan.price_original }}." data-en="*Promotional price for the first month only. Subsequent months RM{{ plan.price_original }}.">*Harga promosi untuk bulan pertama sahaja. Bulan seterusnya RM{{ plan.price_original }}.</p>
-            <p class="text-[10px] text-amber-300/90 mb-6" data-ms="Promosi Terhad: 10 Bisnes Sahaja (Menjelang 2027)" data-en="Limited Offer: 10 Businesses Only (Ahead of 2027)">Promosi Terhad: 10 Bisnes Sahaja (Menjelang 2027)</p>
+            <h3 class="text-2xl font-bold text-white mb-4" data-ms="Pakej {{ plan.name }}" data-en="{{ plan.name }} Package">Pakej {{ plan.name }}</h3>
+
+            <!-- Baris 1: Yuran Pemasangan -->
+            <div class="flex items-start justify-between gap-3 border-t border-zinc-800/80 py-2.5">
+                <span class="text-[11px] font-mono uppercase tracking-wider text-zinc-400 leading-snug" data-ms="Yuran Pemasangan" data-en="Setup Fee">Yuran Pemasangan</span>
+                <span class="text-right text-sm font-bold whitespace-nowrap"><span class="line-through text-zinc-500" aria-hidden="true">RM{{ plan.setup_fee }}</span> <span class="sr-only" data-ms="Yuran asal RM{{ plan.setup_fee }}. Kini percuma." data-en="Original fee RM{{ plan.setup_fee }}. Now free.">Yuran asal RM{{ plan.setup_fee }}. Kini percuma.</span><span class="text-emerald-400 font-bold" data-ms="PERCUMA" data-en="FREE">PERCUMA</span></span>
+            </div>
+
+            <!-- Baris 2: Yuran Bulan Pertama (Promo 2027) -->
+            <div class="flex items-start justify-between gap-3 border-t border-zinc-800/80 py-2.5">
+                <span class="text-[11px] font-mono uppercase tracking-wider text-emerald-400 leading-snug" data-ms="Bulan Pertama (Promo 2027)" data-en="First Month (2027 Promo)">Bulan Pertama (Promo 2027)</span>
+                <span class="text-right whitespace-nowrap"><span class="text-2xl font-extrabold text-white leading-none">RM{{ plan.price_first_month }}</span> <span class="text-[10px] font-normal text-zinc-400" data-ms="/ Bulan" data-en="/ Month">/ Bulan</span></span>
+            </div>
+
+            <!-- Baris 3: Yuran Bulan Seterusnya (Harga Asal) -->
+            <div class="flex items-start justify-between gap-3 border-t border-zinc-800/80 pt-2.5 pb-3">
+                <span class="text-[11px] font-mono uppercase tracking-wider text-zinc-400 leading-snug" data-ms="Bulan Seterusnya (Harga Asal)" data-en="Subsequent Months (Original Price)">Bulan Seterusnya (Harga Asal)</span>
+                <span class="text-right whitespace-nowrap"><span class="text-base font-bold text-zinc-200">RM{{ plan.price_original }}</span> <span class="text-[10px] font-normal text-zinc-500" data-ms="/ Bulan" data-en="/ Month">/ Bulan</span></span>
+            </div>
+
+            <p class="text-[10px] text-amber-300/90 mb-4" data-ms="Promosi Terhad: 10 Bisnes Sahaja (Menjelang 2027)" data-en="Limited Offer: 10 Businesses Only (Ahead of 2027)">Promosi Terhad: 10 Bisnes Sahaja (Menjelang 2027)</p>
+            <p class="text-[10px] text-zinc-500 mb-6" data-ms="*Harga promosi untuk bulan pertama sahaja. Bulan seterusnya RM{{ plan.price_original }}." data-en="*Promotional price for the first month only. Subsequent months RM{{ plan.price_original }}.">*Harga promosi untuk bulan pertama sahaja. Bulan seterusnya RM{{ plan.price_original }}.</p>
             <dl class="space-y-2 text-xs text-zinc-300 mb-8 flex-1">
                 <div><dt class="text-indigo-400" data-ms="Model Bot v1" data-en="Bot Model v1">Model Bot v1</dt><dd>200mb</dd></div>
                 <div><dt class="text-indigo-400" data-ms="Kapasiti talian WhatsApp" data-en="WhatsApp line capacity">Kapasiti talian WhatsApp</dt><dd data-ms="{{ plan.lines }} talian" data-en="{{ plan.lines }} lines">{{ plan.lines }} talian</dd></div>
@@ -155,9 +172,6 @@
             </a>
         </div>
     </div>
-
-    <!-- GARIS PEMISAH KEMAS -->
-    <div class="max-w-7xl mx-auto border-t border-zinc-800/80 my-16"></div>
 
     <!-- GARIS PEMISAH KEMAS -->
     <div class="max-w-7xl mx-auto border-t border-zinc-800/80 my-16"></div>
