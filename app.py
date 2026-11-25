@@ -440,10 +440,19 @@ def arrestruct_subscribe():
 
     # Bina mesej WhatsApp sedia hantar. Nombor pelanggan kekal dalam borang
     # kerana wa.me hanya menyasarkan nombor peniaga.
+    #
+    # Penanda `[dari website]` dan frasa produk yang tepat diperlukan supaya
+    # bot boleh mencipta pesanan + kod rujukan secara automatik. Tanpa ini,
+    # pelanggan terpaksa memilih pakej sekali lagi dalam chat.
+    product_phrase = {
+        'trial': 'arrestruct trial',
+        'personal': 'arrestruct personal',
+        'business': 'arrestruct business',
+    }[package]
     label = {'trial': 'Trial (14 hari)', 'personal': 'Personal (1 tahun)',
              'business': 'Business (1 tahun)'}[package]
     text = (
-        f"Halo Architech Systems, saya ingin melanggan Arrestruct.{chr(10)}"
+        f"[dari website] Saya nak beli {product_phrase}{chr(10)}"
         f"Pakej: {label}{chr(10)}"
         f"Nama: {name}{chr(10)}"
         f"E-mel: {email or '-'}{chr(10)}"

@@ -158,6 +158,35 @@
         <h2 class="text-2xl font-bold text-white mb-2" data-ms="Borang Langganan" data-en="Subscription Form">Subscription Form</h2>
         <p class="text-zinc-400 mb-8" data-ms="Isi butiran — kami akan hubungi anda melalui WhatsApp untuk pengaktifan lesen." data-en="Fill in your details — we will contact you on WhatsApp to activate your licence.">Fill in your details — we will contact you on WhatsApp to activate your licence.</p>
 
+        {# Panduan mesej WhatsApp: bot memerlukan format tertentu supaya
+           pesanan + kod rujukan dijana automatik. Tanpa panduan ini pelanggan
+           perlu memilih pakej sekali lagi dalam chat. #}
+        <div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-6 mb-8">
+            <h3 class="text-emerald-400 font-semibold mb-3">
+                <i class="fa-brands fa-whatsapp mr-2" aria-hidden="true"></i>
+                <span data-ms="Cara pesan melalui WhatsApp" data-en="How to order on WhatsApp">How to order on WhatsApp</span>
+            </h3>
+            <p class="text-zinc-400 text-sm mb-4" data-ms="Bot WhatsApp kami memproses pesanan secara automatik. Taip mesej mengikut format di bawah — salin dan tampal sahaja:" data-en="Our WhatsApp bot processes orders automatically. Type your message in the format below — just copy and paste:">Our bot processes orders automatically. Type your message in the format below — just copy and paste:</p>
+
+            <div class="space-y-3">
+                <div class="rounded-lg bg-zinc-900/80 border border-zinc-800 px-4 py-3">
+                    <p class="text-xs uppercase tracking-wider text-zinc-500 mb-1">Personal — RM99</p>
+                    <code class="block text-emerald-300 text-sm font-mono select-all">arrestruct personal</code>
+                </div>
+                <div class="rounded-lg bg-zinc-900/80 border border-zinc-800 px-4 py-3">
+                    <p class="text-xs uppercase tracking-wider text-zinc-500 mb-1">Business — RM249</p>
+                    <code class="block text-emerald-300 text-sm font-mono select-all">arrestruct business</code>
+                </div>
+            </div>
+
+            <p class="text-zinc-500 text-xs mt-4" data-ms="Bot akan balas dengan kod rujukan (contoh INV-2026-0001), arahan bayaran dan kod QR DuitNow. Tulis kod rujukan itu dalam medan nota semasa transfer, kemudian hantar screenshot bukti. Admin akan sahkan bayaran dan kunci lesen dihantar melalui WhatsApp." data-en="The bot replies with a reference code (e.g. INV-2026-0001), payment instructions and a DuitNow QR code. Put that reference in the transfer note, then send the screenshot. Our admin verifies the payment and your licence key is sent on WhatsApp.">The bot replies with a reference code (e.g. INV-2026-0001), payment instructions and a DuitNow QR code. Put that reference in the transfer note, then send the screenshot. Our admin verifies the payment and your licence key is sent on WhatsApp.</p>
+
+            <p class="text-zinc-500 text-xs mt-3">
+                <i class="fa-solid fa-triangle-exclamation text-amber-400 mr-1" aria-hidden="true"></i>
+                <span data-ms="Jika bot tidak mengenali mesej anda, ia akan beri menu pilihan. Jangan bayar sebelum menerima kod rujukan." data-en="If the bot does not recognise your message it will offer a menu. Never pay before you receive a reference code.">If the bot does not recognise your message it will offer a menu. Never pay before you receive a reference code.</span>
+            </p>
+        </div>
+
         <form method="post" action="{{ url_for('arrestruct_subscribe') }}" class="glass-panel rounded-2xl p-6 space-y-4">
             <div class="grid sm:grid-cols-2 gap-4">
                 <label class="block">
