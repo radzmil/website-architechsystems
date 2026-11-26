@@ -1,6 +1,7 @@
 import logging
 import json
 import os
+import re
 import smtplib
 import ssl
 from email.message import EmailMessage
@@ -8,6 +9,7 @@ from email.utils import parseaddr
 from xml.etree.ElementTree import Element, SubElement, tostring
 from urllib.parse import urlsplit
 from urllib.parse import urlencode
+from urllib.parse import parse_qs
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from pathlib import Path
@@ -117,6 +119,148 @@ ARRESTRUCT_PRICES = {
     'personal': os.environ.get('ARRESTRUCT_PRICE_PERSONAL', '').strip(),
     'business': os.environ.get('ARRESTRUCT_PRICE_BUSINESS', '').strip(),
 }
+
+# Video demo pada halaman Arrestruct (seksyen #demo).
+#
+# Terima bentuk URL:
+#   - YouTube   : https://www.youtube.com/watch?v=XXXX atau https://youtu.be/XXXX
+#   - Vimeo     : https://vimeo.com/123456789
+#   - Google Drive: https://drive.google.com/file/d/<ID>/view?usp=sharing
+#   - Fail terus: https://contoh.com/arrestruct-demo.mp4 (atau .webm / .ogg)
+#
+# Jika kosong ATAU tidak sah, seksyen video tidak dipaparkan — halaman tetap
+# berfungsi seperti biasa.
+ARRESTRUCT_DEMO_VIDEO_URL = _clean_url(os.environ.get('ARRESTRUCT_DEMO_VIDEO_URL'))
+
+# Format fail video yang boleh dimainkan terus oleh pelayar (tanpa embed).
+_VIDEO_FILE_EXTENSIONS = {
+    '.mp4': 'video/mp4',
+    '.webm': 'video/webm',
+    '.ogg': 'video/ogg',
+    '.ogv': 'video/ogg',
+}
+
+# ID video YouTube/Vimeo: 11 aksara base64url (YouTube) atau digit (Vimeo).
+_EMBED_ID_RE = re.compile(r'^[A-Za-z0-9_-]{6,20}$')
+
+# ID fail Google Drive: 28-45 aksara base64url (contoh
+# `1KnjiBpLkwEwFjB7HsQ2r3uZ-5diuKONR`).
+_DRIVE_ID_RE = re.compile(r'^[A-Za-z0-9_-]{20,64}$')
+
+# Host Google Drive yang sah untuk pautan kongsi `/file/d/<ID>/...`.
+_DRIVE_HOSTS = ('drive.google.com',)
+
+
+def _google_drive_file_id(parsed):
+    """Ambil ID fail daripada pautan kongsi Google Drive.
+
+    Pautan `/view?usp=drive_link` ialah halaman pemapar Drive, BUKAN video —
+    memasukkan URL itu ke `src` iframe akan gagal. Embed yang betul ialah
+    `/file/d/<ID>/preview`. Fungsi ini menyokong bentuk biasa:
+
+    - `https://drive.google.com/file/d/<ID>/view?usp=sharing`
+    - `https://drive.google.com/file/d/<ID>/preview`
+    - `https://drive.google.com/d/<ID>/edit`
+    - `https://drive.google.com/open?id=<ID>`
+
+    Args:
+        parsed: Hasil `urlsplit()` URL kongsi.
+
+    Returns:
+        ID fail jika sah, atau None.
+    """
+    parts = [part for part in parsed.path.split('/') if part]
+    # Buang segmen 'file' / 'u/0' di hadapan; ID sentiasa selepas 'd'.
+    if 'd' in parts:
+        index = parts.index('d')
+        candidate = parts[index + 1] if len(parts) > index + 1 else ''
+    else:
+        # Bentuk lama/ringkas: /open?id=<ID> atau /uc?id=<ID>.
+        candidate = (parse_qs(parsed.query).get('id') or [''])[0]
+    if candidate and _DRIVE_ID_RE.match(candidate):
+        return candidate
+    return None
+
+
+def resolve_demo_video(raw_url):
+    """Tukar URL video mentah kepada butiran yang selamat untuk template.
+
+    Nilai daripada pemboleh ubah persekitaran tidak boleh terus dimasukkan ke
+    atribut `src` iframe — URL jahat (contoh `javascript:`) akan menjadi
+    kelemahan XSS. Fungsi ini hanya memulangkan bentuk yang dijangka:
+
+    - `{'kind': 'embed', 'provider': 'YouTube'|'Vimeo'|'Google Drive', 'src': ...}`
+      untuk video yang dipaparkan melalui iframe embed.
+    - `{'kind': 'file', 'mime': ..., 'src': ...}`
+      untuk fail video yang dimainkan terus oleh `<video>`.
+
+    Semua URL yang tidak dikenali (atau bukan https) menghasilkan `None`
+    supaya template menyembunyikan seksyen video sepenuhnya.
+
+    Args:
+        raw_url: Nilai `ARRESTRUCT_DEMO_VIDEO_URL` selepas pembersihan.
+
+    Returns:
+        dict atau None.
+    """
+    if not raw_url:
+        return None
+    parsed = urlsplit(raw_url)
+    if (parsed.scheme != 'https' or not parsed.hostname
+            or parsed.username or parsed.password):
+        return None
+    host = parsed.hostname.lower()
+    path = parsed.path
+
+    # ---- YouTube ---------------------------------------------------------
+    if host in ('youtu.be',):
+        candidate = path.strip('/').split('/')[0]
+        if _EMBED_ID_RE.match(candidate):
+            return {'kind': 'embed', 'provider': 'YouTube',
+                    'src': 'https://www.youtube-nocookie.com/embed/' + candidate}
+        return None
+    if host in ('youtube.com', 'www.youtube.com', 'm.youtube.com'):
+        if path.rstrip('/') in ('/watch', ''):
+            candidate = (parse_qs(parsed.query).get('v') or [''])[0]
+        elif path.startswith('/embed/') or path.startswith('/shorts/'):
+            candidate = path.strip('/').split('/')[1]
+        else:
+            return None
+        if _EMBED_ID_RE.match(candidate):
+            return {'kind': 'embed', 'provider': 'YouTube',
+                    'src': 'https://www.youtube-nocookie.com/embed/' + candidate}
+        return None
+
+    # ---- Vimeo -----------------------------------------------------------
+    if host in ('vimeo.com', 'www.vimeo.com', 'player.vimeo.com'):
+        parts = [part for part in path.split('/') if part]
+        if parts and parts[0] == 'video' and len(parts) > 1:
+            parts = parts[1:]
+        if not parts or not parts[0].isdigit():
+            return None
+        return {'kind': 'embed', 'provider': 'Vimeo',
+                'src': 'https://player.vimeo.com/video/' + parts[0]}
+
+    # ---- Google Drive ----------------------------------------------------
+    # Pautan kongsi (`/view?usp=drive_link`) mesti ditukar kepada `/preview`,
+    # jika tidak iframe hanya memaparkan halaman Drive atau gagal.
+    # Fail mesti dikongsi "Anyone with the link" — jika tidak, Drive memaparkan
+    # skrin log masuk di dalam iframe.
+    if host in _DRIVE_HOSTS:
+        drive_id = _google_drive_file_id(parsed)
+        if drive_id:
+            return {'kind': 'embed', 'provider': 'Google Drive',
+                    'src': 'https://drive.google.com/file/d/' + drive_id + '/preview'}
+        return None
+
+    # ---- Fail video terus ------------------------------------------------
+    suffix = Path(path).suffix.lower()
+    if suffix in _VIDEO_FILE_EXTENSIONS:
+        return {'kind': 'file', 'mime': _VIDEO_FILE_EXTENSIONS[suffix],
+                'src': raw_url}
+
+    return None
+
 
 
 
@@ -402,6 +546,7 @@ def arrestruct():
         whatsapp=ARRESTRUCT_WHATSAPP,
         version=ARRESTRUCT_VERSION,
         size_mb=ARRESTRUCT_SIZE_MB,
+        demo_video=resolve_demo_video(ARRESTRUCT_DEMO_VIDEO_URL),
     ))
     response.headers['Cache-Control'] = 'no-store'
     return response

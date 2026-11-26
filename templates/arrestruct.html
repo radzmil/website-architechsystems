@@ -28,6 +28,13 @@
                         <span data-ms="Muat turun segera" data-en="Download coming soon">Download coming soon</span>
                     </span>
                     {% endif %}
+                    {% if demo_video %}
+                    <a href="#demo"
+                       class="inline-flex items-center gap-2 rounded-xl border border-indigo-500/40 bg-indigo-500/10 hover:bg-indigo-500/20 px-6 py-3 font-semibold text-indigo-200 transition">
+                        <i class="fa-solid fa-circle-play" aria-hidden="true"></i>
+                        <span data-ms="Tengok Demo Video" data-en="Watch Demo Video">Watch Demo Video</span>
+                    </a>
+                    {% endif %}
                     <a href="#harga" class="inline-flex items-center gap-2 rounded-xl border border-zinc-700 hover:border-indigo-500 px-6 py-3 font-semibold text-zinc-200 transition">
                         <span data-ms="Lihat Harga" data-en="View Pricing">View Pricing</span>
                     </a>
@@ -92,6 +99,56 @@
         </div>
     </div>
 </section>
+
+{# ------------------------------------------------------------------- demo #}
+{% if demo_video %}
+<section id="demo" class="border-y border-zinc-800 bg-zinc-950/60 scroll-mt-24">
+    <div class="max-w-4xl mx-auto px-6 py-14 md:py-16">
+        <div class="mb-8 text-center">
+            <h2 class="text-2xl font-bold text-white mb-2" data-ms="Lihat Arrestruct Beraksi" data-en="See Arrestruct in Action">See Arrestruct in Action</h2>
+            <p class="text-zinc-400 max-w-2xl mx-auto" data-ms="Video pendek ini menunjukkan cara Arrestruct mengimbas, mengelaskan dan menyusun fail pada pemacu USB." data-en="This short video shows how Arrestruct scans, classifies and sorts files on a USB drive.">This short video shows how Arrestruct scans, classifies and sorts files on a USB drive.</p>
+        </div>
+
+        {% if demo_video.kind == 'embed' %}
+        <div class="relative w-full aspect-video overflow-hidden rounded-2xl border border-zinc-800 bg-black">
+            <iframe class="absolute inset-0 w-full h-full"
+                    src="{{ demo_video.src }}"
+                    title="{{ 'Arrestruct demo video (' ~ demo_video.provider ~ ')' }}"
+                    loading="lazy" allowfullscreen
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>
+        </div>
+        {% set open_link = demo_video.src.replace('/preview', '/view')
+                          if demo_video.provider == 'Google Drive' else demo_video.src %}
+        <p class="text-xs text-zinc-500 mt-3 text-center">
+            <span data-ms="Video dihoskan di {{ demo_video.provider }}." data-en="Video hosted on {{ demo_video.provider }}.">Video hosted on {{ demo_video.provider }}.</span>
+            &middot;
+            <a href="{{ open_link }}" target="_blank" rel="noopener noreferrer"
+               class="text-indigo-400 hover:text-indigo-300 underline">
+                <span data-ms="Buka dalam tab baharu" data-en="Open in a new tab">Open in a new tab</span>
+            </a>
+        </p>
+        {% else %}
+        <div class="w-full overflow-hidden rounded-2xl border border-zinc-800 bg-black">
+            <video class="w-full h-auto max-h-[70vh] bg-black" controls preload="metadata" playsinline>
+                <source src="{{ demo_video.src }}" type="{{ demo_video.mime }}">
+                <span data-ms="Pelayar anda tidak menyokong main balik video." data-en="Your browser does not support video playback.">Your browser does not support video playback.</span>
+            </video>
+        </div>
+        {% endif %}
+
+        {% if download_url %}
+        <p class="text-center mt-6">
+            <a href="{{ download_url }}" rel="noopener" download
+               class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 px-6 py-3 font-semibold text-white transition">
+                <i class="fa-solid fa-download" aria-hidden="true"></i>
+                <span data-ms="Cuba Sendiri (Trial 14 Hari)" data-en="Try It Yourself (14-Day Trial)">Try It Yourself (14-Day Trial)</span>
+            </a>
+        </p>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
 
 {# --------------------------------------------------------------------- harga #}
 <section id="harga" class="max-w-6xl mx-auto px-6 py-14 md:py-16">

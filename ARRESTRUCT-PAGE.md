@@ -28,10 +28,59 @@ Fail:
 1. **Hero** — tajuk, ringkasan, butang muat turun, versi/saiz
 2. **Apa Yang Selesaikan** — 4 kad masalah → penyelesaian
 3. **Keselamatan** — 4 jaminan (fail asal, quarantine, dry-run, lesen)
-4. **Harga** — 3 kad pakej (Trial / Personal / Business)
-5. **Borang Langganan** — nama, telefon, e-mel, pakej → WhatsApp
-6. **Muat Turun** — butang `.exe` + amaran SmartScreen
-7. **Dwibahasa** — BM/EN mengikut togol bahasa sedia ada
+4. **Video Demo** (`#demo`) — tersembunyi jika `ARRESTRUCT_DEMO_VIDEO_URL` kosong
+5. **Harga** — 3 kad pakej (Trial / Personal / Business)
+6. **Borang Langganan** — nama, telefon, e-mel, pakej → WhatsApp
+7. **Muat Turun** — butang `.exe` + amaran SmartScreen
+8. **Dwibahasa** — BM/EN mengikut togol bahasa sedia ada
+
+---
+
+## Video demo
+
+Tetapkan `ARRESTRUCT_DEMO_VIDEO_URL` dengan salah satu bentuk:
+
+| Bentuk | Contoh | Paparan |
+|---|---|---|
+| YouTube | `https://youtu.be/XXXXXXXXXXX` atau `https://www.youtube.com/watch?v=XXXXXXXXXXX` | iframe `youtube-nocookie.com` (16:9) |
+| Vimeo | `https://vimeo.com/123456789` | iframe `player.vimeo.com` (16:9) |
+| Google Drive | `https://drive.google.com/file/d/<ID>/view?usp=drive_link` | iframe `drive.google.com/file/d/<ID>/preview` (16:9) |
+| Fail terus | `https://.../arrestruct-demo.mp4` (`.mp4` / `.webm` / `.ogg`) | `<video controls>` |
+
+Nota:
+
+- URL **mesti** bermula `https://`. Skema lain (`http://`, `javascript:`) diabaikan.
+- Domain selain YouTube/Vimeo/Google Drive hanya diterima jika laluan berakhir
+  dengan sambungan video yang disokong (`.mp4`, `.webm`, `.ogg`, `.ogv`).
+- Jika tidak dikenali, seksyen video **tidak dipaparkan** dan halaman berfungsi
+  seperti biasa (butang "Watch Demo Video" di hero juga tersembunyi).
+- Kod: `resolve_demo_video()` dalam `app.py` — pembersihan URL berlaku sebelum
+  ia dimasukkan ke atribut `src`, jadi nilai env tidak boleh menyuntik HTML.
+- Jangan simpan fail video besar dalam repo — had deployment Vercel 50 MB.
+  Hos video di GitHub Releases / YouTube / Vimeo dan gunakan URL tersebut.
+
+### Google Drive — wajib "Anyone with the link"
+
+Pautan `/view?usp=drive_link` ialah **halaman pemapar**, bukan fail video. Kod
+menukarnya kepada `/preview` secara automatik. Tetapi Drive **menolak** embed
+jika fail masih peribadi (iframe akan tunjuk skrin log masuk atau kosong).
+
+Langkah wajib di Google Drive:
+
+1. Klik kanan fail video → **Share** → **Share**
+2. **General access** → tukar kepada **Anyone with the link**
+3. Peranan: **Viewer** → **Done**
+4. Salin semula pautan → tampal ke `ARRESTRUCT_DEMO_VIDEO_URL`
+
+Sahkan dengan membuka pautan dalam tetingkap **Incognito** (tanpa log masuk
+Google). Jika video boleh dimainkan di situ, embed juga akan berfungsi.
+
+> **Keburukan Drive:** pemain Drive dalam iframe tidak menyokong `fullscreen`
+> sepenuhnya dan kelajuan strim lebih rendah daripada YouTube/Vimeo, terutamanya
+> pada sambungan mudah alih. Untuk halaman jualan, YouTube (unlisted) atau Vimeo
+> memberi pengalaman lebih baik. Pautan "Open in a new tab" disediakan di bawah
+> video sebagai sandaran.
+
 
 ---
 
@@ -48,6 +97,7 @@ Tetapkan dalam **Vercel → Project → Settings → Environment Variables**:
 | `ARRESTRUCT_PRICE_TRIAL` | Tidak (lalai `0`) | `0` |
 | `ARRESTRUCT_PRICE_PERSONAL` | Tidak | `99` |
 | `ARRESTRUCT_PRICE_BUSINESS` | Tidak | `249` |
+| `ARRESTRUCT_DEMO_VIDEO_URL` | Tidak (kosong = tiada video) | `https://youtu.be/XXXXXXXXXXX` |
 
 Jika `ARRESTRUCT_DOWNLOAD_URL` kosong, halaman papar **"Download coming soon"**
 — tidak rosak, hanya belum aktif.
